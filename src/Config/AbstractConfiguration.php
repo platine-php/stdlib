@@ -114,22 +114,28 @@ abstract class AbstractConfiguration implements ConfigurationInterface
         $rules = $this->getValidationRules();
 
         if (array_key_exists($key, $rules)) {
-            $rule = $rules[$key];
+            $expectedType = $rules[$key];
             $type = gettype($value);
             $className = null;
-            if (strpos($rule, 'object::') !== false) {
-                $parts = explode('::', $rule, 2);
-                $className = $parts[1];
+            if (strpos($expectedType, 'object::') === 0) {
+                $className = substr($expectedType, 8);
             }
 
-            if (
-                ($className !== null && !$value instanceof $className)
-                || $type !== $rule
-            ) {
+            $error = null;
+
+            if ($className !== null) {
+                if (!($value instanceof $className)) {
+                    $error = 'Invalid configuration [%s] instance value, expected [%s], but got [%s]';
+                }
+            } elseif ($type !== $expectedType) {
+                $error = 'Invalid configuration [%s] value, expected [%s], but got [%s]';
+            }
+
+            if ($error !== null) {
                 throw new Error(sprintf(
-                    'Invalid configuration [%s] value, expected [%s], but got [%s]',
+                    $error,
                     $key,
-                    $className ?? $rule,
+                    $className ?? $expectedType,
                     is_object($value) ? get_class($value) : gettype($value)
                 ));
             }
