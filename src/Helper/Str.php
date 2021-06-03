@@ -53,13 +53,667 @@ namespace Platine\Stdlib\Helper;
 class Str
 {
 
+    /**
+     * The cache of snake-cased words.
+     *
+     * @var array<string, string>
+     */
+    protected static array $snakeCache = [];
 
+    /**
+     * The cache of camel-cased words.
+     *
+     * @var array<string, string>
+     */
+    protected static array $camelCache = [];
 
+    /**
+     * The cache of studly-cased words.
+     *
+     * @var array<string, string>
+     */
+    protected static array $studlyCache = [];
+
+    /**
+     * Convert an UTF-8 value to ASCII.
+     * @param string $value
+     * @return string
+     */
+    public static function toAscii(string $value): string
+    {
+        foreach (self::getChars() as $key => $val) {
+            $value = str_replace($val, $key, $value);
+        }
+
+        return (string)preg_replace('/[^\x20-\x7E]/u', '', $value);
+    }
+
+    /**
+     * Convert to camel case
+     * @param string $value
+     * @param bool $lcfirst
+     * @return string
+     */
+    public static function camel(string $value, bool $lcfirst = true): string
+    {
+        if (isset(self::$camelCache[$value])) {
+            return self::$camelCache[$value];
+        }
+
+        $studly = static::studly($value);
+        return self::$camelCache[$value] = ($lcfirst ? lcfirst($studly) : $studly);
+    }
+
+    /**
+     * Convert an string to array
+     * @param string $value
+     * @param string $delimiter
+     * @param int $limit
+     * @return array<string>
+     */
+    public static function toArray(string $value, string $delimiter = ', ', int $limit = 0): array
+    {
+        $string = trim($value, $delimiter . ' ');
+        if ($string === '') {
+            return [];
+        }
+
+        $values = [];
+        /** @var array<string> $rawList */
+        $rawList = $limit < 1
+                ? (array) explode($delimiter, $string)
+                : (array) explode($delimiter, $string, $limit);
+
+        foreach ($rawList as $val) {
+            $val = trim($val);
+            if ($val !== '') {
+                $values[] = $val;
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Determine if a given string contains a given sub string.
+     * @param string $value
+     * @param string|array<mixed> $needles
+     * @return bool
+     */
+    public static function contains(string $value, $needles): bool
+    {
+        if (!is_array($needles)) {
+            $needles = [$needles];
+        }
+
+        foreach ($needles as $needle) {
+            if ($needle !== '' && strpos($needle, $value) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if a given string ends with a given sub string.
+     * @param string $value
+     * @param string|array<mixed> $needles
+     * @return bool
+     */
+    public static function endsWith(string $value, $needles): bool
+    {
+        if (!is_array($needles)) {
+            $needles = [$needles];
+        }
+
+        foreach ($needles as $needle) {
+            if ($value === (string) substr($needle, -strlen($value))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if a given string starts with a given sub string.
+     * @param string $value
+     * @param string|array<mixed> $needles
+     * @return bool
+     */
+    public static function startsWith(string $value, $needles): bool
+    {
+        if (!is_array($needles)) {
+            $needles = [$needles];
+        }
+
+        foreach ($needles as $needle) {
+            if ($needle !== '' && strpos($needle, $value) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the first line of multi line string
+     * @param string $value
+     * @return string
+     */
+    public static function firstLine(string $value): string
+    {
+        $str = trim($value);
+
+        if ($str === '') {
+            return '';
+        }
+
+        if (strpos($str, "\n") > 0) {
+            $parts = explode("\n", $str);
+
+            return $parts[0] ?? '';
+        }
+
+        return $str;
+    }
+
+    /**
+     * Cap a string with a single instance of a given value.
+     * @param string $value
+     * @param string $cap
+     * @return string
+     */
+    public static function finish(string $value, string $cap): string
+    {
+        $quoted = preg_quote($cap, '/');
+
+        return (string) preg_replace('/(?:' . $quoted . ')+$/', '', $value)
+                . $cap;
+    }
+
+    /**
+     * Determine if a given string matches a given pattern.
+     * @param string $pattern
+     * @param string $value
+     * @return bool
+     */
+    public static function is(string $pattern, string $value): bool
+    {
+        if ($pattern === $value) {
+            return true;
+        }
+
+        $quoted = preg_quote($pattern, '#');
+
+        // Asterisks are translated into zero-or-more regular expression wildcards
+        // to make it convenient to check if the strings starts with the given
+        // pattern such as "library/*", making any string check convenient.
+        $cleanQuoted = str_replace('\*', '.*', $quoted);
+
+        return (bool)preg_match('#^' . $cleanQuoted . '\z#', $value);
+    }
+
+    /**
+     * Return the length of the given string
+     * @param string|int $value
+     * @param string $encode
+     * @return int
+     */
+    public static function length($value, string $encode = 'UTF-8'): int
+    {
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        $length = mb_strlen($value, $encode);
+
+        return $length !== false ? $length : -1;
+    }
 
 
     /**
+     * Add padding to string
+     * @param string|int $value
+     * @param int $length
+     * @param string $padStr
+     * @param int $type
+     * @return string
+     */
+    public static function pad(
+        $value,
+        int $length,
+        string $padStr,
+        int $type = STR_PAD_BOTH
+    ): string {
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        return $length > 0
+                ? str_pad($value, $length, $padStr, $type)
+                : $value;
+    }
+
+    /**
+     * Add padding to string to left
+     * @param string|int $value
+     * @param int $length
+     * @param string $padStr
+     * @return string
+     */
+    public static function padLeft(
+        $value,
+        int $length,
+        string $padStr
+    ): string {
+        return self::pad($value, $length, $padStr, STR_PAD_LEFT);
+    }
+
+    /**
+     * Add padding to string to right
+     * @param string|int $value
+     * @param int $length
+     * @param string $padStr
+     * @return string
+     */
+    public static function padRight(
+        $value,
+        int $length,
+        string $padStr
+    ): string {
+        return self::pad($value, $length, $padStr, STR_PAD_RIGHT);
+    }
+
+    /**
+     * Repeat the given string $length times
+     * @param string|int $value
+     * @param int $length
+     * @return string
+     */
+    public static function repeat($value, int $length = 1): string
+    {
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        return str_repeat($value, $length);
+    }
+
+    /**
+     * Limit the length of given string
+     * @param string $value
+     * @param int $length
+     * @param string $end
+     * @return string
+     */
+    public static function limit(string $value, int $length = 100, string $end = '...'): string
+    {
+        if (mb_strwidth($value, 'UTF-8') <= $length) {
+            return $value;
+        }
+
+        return rtrim(mb_strimwidth($value, 0, $length, '', 'UTF-8')) . $end;
+    }
+
+    /**
+     * Limit the number of words in a string.
+     * @param string $value
+     * @param int $length
+     * @param string $end
+     * @return string
+     */
+    public static function words(string $value, int $length = 100, string $end = '...'): string
+    {
+        $matches = [];
+        preg_match('/^\s*+(?:\S++\s*+){1,' . $length . '}/u', $value, $matches);
+
+        if (!isset($matches[0]) || strlen($value) === strlen($matches[0])) {
+            return $value;
+        }
+
+        return rtrim($matches[0]) . $end;
+    }
+
+    /**
+     * Replace the first match of the given string
+     * @param string $search
+     * @param string $replace
+     * @param string $value
+     * @return string
+     */
+    public static function replaceFirst(string $search, string $replace, string $value): string
+    {
+        $pos = strpos($value, $search);
+        if ($pos !== false) {
+            return substr_replace($value, $replace, $pos, strlen($search));
+        }
+
+        return $value;
+    }
+
+    /**
+     * Replace the last match of the given string
+     * @param string $search
+     * @param string $replace
+     * @param string $value
+     * @return string
+     */
+    public static function replaceLast(string $search, string $replace, string $value): string
+    {
+        $pos = strrpos($value, $search);
+
+        if ($pos !== false) {
+            return substr_replace($value, $replace, $pos, strlen($search));
+        }
+
+        return $value;
+    }
+
+    /**
+     * Put the string to title format
+     * @param string $value
+     * @return string
+     */
+    public static function title(string $value): string
+    {
+        return mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
+    }
+
+    /**
+     * Generate a friendly "slug" from a given string.
+     * @param string $value
+     * @param string $separator
+     * @return string
+     */
+    public static function slug(string $value, string $separator = '-'): string
+    {
+        $title = self::toAscii($value);
+
+        // Convert all dashes/underscores into separator
+        $flip = $separator === '-' ? '_' : '-';
+
+        $utf8 = (string) preg_replace('![' . preg_quote($flip) . ']+!u', $separator, $title);
+
+        // Remove all characters that are not the separator, letters, numbers,
+        // or whitespace.
+        $alphaNum = (string) preg_replace(
+            '![^' . preg_quote($separator) . '\pL\pN\s]+!u',
+            '',
+            mb_strtolower($utf8)
+        );
+
+        // Replace all separator characters and whitespace by a single separator
+        $removeWhitespace = (string) preg_replace(
+            '![' . preg_quote($separator) . '\s]+!u',
+            $separator,
+            $alphaNum
+        );
+
+        return trim($removeWhitespace, $separator);
+    }
+
+    /**
+     * Convert a string to snake case.
+     * @param string $value
+     * @param string $separator
+     * @return string
+     */
+    public static function snake(string $value, string $separator = '_'): string
+    {
+        $key = $value . $separator;
+        if (isset(self::$snakeCache[$key])) {
+            return self::$snakeCache[$key];
+        }
+
+        if (!ctype_lower($value)) {
+            $replace = (string) preg_replace('/\s+/', '', $value);
+
+            $value = strtolower((string) preg_replace(
+                '/(.)(?=[A-Z])/',
+                '$1' . $separator,
+                $replace
+            ));
+        }
+
+        return self::$snakeCache[$key] = $value;
+    }
+
+    /**
+     * Convert a value to studly caps case.
+     * @param string $value
+     * @return string
+     */
+    public static function studly(string $value): string
+    {
+        $key = $value;
+        if (isset(self::$studlyCache[$key])) {
+            return self::$studlyCache[$key];
+        }
+
+        $val = ucwords(str_replace(['-', '_'], ' ', $value));
+
+        return self::$studlyCache[$key] = str_replace(' ', '', $val);
+    }
+
+    /**
+     * Returns the portion of string specified by the start and
+     * length parameters.
+     *
+     * @param string $value
+     * @param int $start
+     * @param int|null $length
+     * @return string
+     */
+    public static function substr(string $value, int $start = 0, ?int $length = null): string
+    {
+        return mb_substr($value, $start, $length, 'UTF-8');
+    }
+
+    /**
+     * Make a string's first character to upper case.
+     * @param string $value
+     * @return string
+     */
+    public static function ucfirst(string $value): string
+    {
+        return static::upper(
+            static::substr($value, 0, 1)
+        ) . static::substr($value, 1);
+    }
+
+    /**
+     * Split the string by length part
+     * @param string $value
+     * @param int $length
+     * @return array<int, string>
+     */
+    public static function split(string $value, int $length = 1): array
+    {
+        if ($length < 1) {
+            return [];
+        }
+
+        if (self::isAscii($value)) {
+            $res = str_split($value, $length);
+            if ($res === false) {
+                return [];
+            }
+
+            return $res;
+        }
+
+        if (mb_strlen($value) <= $length) {
+            return [$value];
+        }
+        $matches = [];
+        preg_match_all(
+            '/.{' . $length . '}|[^\x00]{1,' . $length . '}$/us',
+            $value,
+            $matches
+        );
+
+        return $matches[0];
+    }
+
+    /**
+     * Check whether the given string contains only ASCII chars
+     * @param string $value
+     * @return bool
+     */
+    public static function isAscii(string $value): bool
+    {
+        return (bool)!preg_match('/[^\x00-\x7F]/S', $value);
+    }
+
+    /**
+     * Put string to lower case
+     * @param string $value
+     * @return string
+     */
+    public static function lower(string $value): string
+    {
+        return mb_strtolower($value, 'UTF-8');
+    }
+
+    /**
+     * Put string to upper case
+     * @param string $value
+     * @return string
+     */
+    public static function upper(string $value): string
+    {
+        return mb_strtoupper($value, 'UTF-8');
+    }
+
+    /**
+     * Return the unique ID
+     * @param int $length
+     *
+     * @return string
+     */
+    public static function uniqId(int $length = 13): string
+    {
+        $bytes = random_bytes((int) ceil($length / 2));
+
+        return (string)substr(bin2hex($bytes), 0, $length);
+    }
+
+    /**
+     * Generate random string value
+     * @param int $length
+     * @return string
+     */
+    public static function random(int $length = 16): string
+    {
+        $string = '';
+        while (($len = strlen($string)) < $length) {
+            $size = $length - $len;
+            $bytes = random_bytes($size);
+
+            $string .= substr(
+                str_replace(['/', '+', '='], '', base64_encode($bytes)),
+                0,
+                $size
+            );
+        }
+
+        return $string;
+    }
+
+    /**
+     * Generates a random string of a given type and length. Possible
+     * values for the first argument ($type) are:
+     *  - alnum    - alpha-numeric characters (including capitals)
+     *  - alpha    - alphabetical characters (including capitals)
+     *  - hexdec   - hexadecimal characters, 0-9 plus a-f
+     *  - numeric  - digit characters, 0-9
+     *  - nozero   - digit characters, 1-9
+     *  - distinct - clearly distinct alpha-numeric characters.
+     * @param string $type
+     * @param int $length
+     * @return string
+     */
+    public static function randomString(string $type = 'alnum', int $length = 8): string
+    {
+        $utf8 = false;
+
+        switch ($type) {
+            case 'alnum':
+                $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                break;
+            case 'alpha':
+                $pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                break;
+            case 'lowalnum':
+                $pool = '0123456789abcdefghijklmnopqrstuvwxyz';
+                break;
+            case 'hexdec':
+                $pool = '0123456789abcdef';
+                break;
+            case 'numeric':
+                $pool = '0123456789';
+                break;
+            case 'nozero':
+                $pool = '123456789';
+                break;
+            case 'distinct':
+                $pool = '2345679ACDEFHJKLMNPRSTUVWXYZ';
+                break;
+            default:
+                $pool = (string)$type;
+                $utf8 = !self::isAscii($pool);
+                break;
+        }
+
+        // Split the pool into an array of characters
+        $pool = $utf8 ? self::split($pool, 1) : str_split($pool, 1);
+        // Largest pool key
+        $max = count($pool) - 1;
+
+        $str = '';
+        for ($i = 0; $i < $length; $i++) {
+            // Select a random character from the pool and add it to the string
+            $str .= $pool[random_int(0, $max)];
+        }
+
+        // Make sure alnum strings contain at least one letter and one digit
+        if ($type === 'alnum' && $length > 1) {
+            if (ctype_alpha($str)) {
+                // Add a random digit
+                $str[random_int(0, $length - 1)] = chr(random_int(48, 57));
+            } elseif (ctype_digit($str)) {
+                // Add a random letter
+                $str[random_int(0, $length - 1)] = chr(random_int(65, 90));
+            }
+        }
+
+        return $str;
+    }
+
+    /**
+     * Create a simple random token-string
+     * @param int $length
+     * @param string $salt
+     * @return string
+     */
+    public static function randomToken(int $length = 24, string $salt = ''): string
+    {
+        $string = '';
+        $chars  = '0456789abc1def2ghi3jkl';
+        $maxVal = strlen($chars) - 1;
+
+        for ($i = 0; $i < $length; ++$i) {
+            $string .= $chars[random_int(0, $maxVal)];
+        }
+
+        return md5($string . $salt);
+    }
+
+    /**
      * Return the ASCII replacement
-     * @return array<string|int, string|array<string>>
+     * @return array<string, array<string>>
      */
     private static function getChars(): array
     {

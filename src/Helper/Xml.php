@@ -53,5 +53,111 @@ namespace Platine\Stdlib\Helper;
 class Xml
 {
 
+    /**
+     * Transform an XML string to array
+     * @param string $xml
+     * @return array<string, mixed>
+     */
+    public static function decode(string $xml): array
+    {
+        return self::xmlToArray($xml);
+    }
 
+    /**
+     * Transform an array to XML
+     * @param array<mixed> $data
+     * @return string
+     */
+    public static function encode(array $data): string
+    {
+        $xml = '<xml>';
+        $xml .= self::arrayToXml($data);
+        $xml .= '</xml>';
+
+        return $xml;
+    }
+
+    /**
+     * Transform an XML string to array
+     * @param string $xml
+     * @return array<string, mixed>
+     */
+    public static function xmlToArray(string $xml): array
+    {
+        $string = simplexml_load_string(
+            $xml,
+            'SimpleXMLElement',
+            LIBXML_NOCDATA | LIBXML_NOBLANKS
+        );
+
+        $jsonString = Json::encode($string);
+        $data = Json::decode($jsonString, true);
+
+        if ($data === false) {
+            return [];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Transform an array to XML
+     * @param array<string, mixed|iterable> $data
+     * @return string
+     */
+    public static function arrayToXml(array $data): string
+    {
+        $xml = '';
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                $xml .= '<' . $key . '>';
+                if (is_iterable($value)) {
+                    /** @var array<string, mixed|iterable> $value */
+                    $xml .= self::arrayToXml($value);
+                } elseif (is_numeric($value)) {
+                    $xml .= $value;
+                } else {
+                    $xml .= self::addCharacterData($value);
+                }
+                $xml .= '</' . $key . '>';
+            }
+        }
+
+        return $xml;
+    }
+
+    /**
+     * Parse the given data to array
+     * @param array<mixed>|object $data
+     * @return array<mixed>
+     */
+    protected static function parseToArray($data): array
+    {
+        $res = [];
+        if (is_object($data)) {
+            $data = (array) $data;
+        }
+
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                if (is_iterable($value)) {
+                    $res[$key] = self::parseToArray($value);
+                } else {
+                    $res[$key] = $value;
+                }
+            }
+        }
+
+        return $res;
+    }
+
+    /**
+     * Add CDATA to the given string
+     * @param string $value
+     * @return string
+     */
+    protected static function addCharacterData(string $value): string
+    {
+        return sprintf('<![CDATA[%s]]>', $value);
+    }
 }

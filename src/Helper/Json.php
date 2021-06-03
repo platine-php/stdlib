@@ -46,6 +46,8 @@ declare(strict_types=1);
 
 namespace Platine\Stdlib\Helper;
 
+use InvalidArgumentException;
+
 /**
  * Class Json
  * @package Platine\Stdlib\Helper
@@ -53,5 +55,52 @@ namespace Platine\Stdlib\Helper;
 class Json
 {
 
+    /**
+     * Decode JSON string
+     * @param string $json
+     * @param bool $assoc
+     * @param int $depth
+     * @param int $options
+     *
+     * @return mixed
+     */
+    public static function decode(
+        string $json,
+        bool $assoc = false,
+        int $depth = 512,
+        int $options = 0
+    ) {
+        $data = json_decode($json, $assoc, $depth, $options);
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidArgumentException(
+                'Error when decoded json string: ' . json_last_error_msg()
+            );
+        }
+
+        return $data;
+    }
+
+    /**
+     * Encode to JSON the given data
+     * @param mixed $data
+     * @param int $options
+     * @param int $depth
+     * @return string
+     */
+    public static function encode(
+        $data,
+        int $options = 0,
+        int $depth = 512
+    ): string {
+        $json = json_encode($data, $options, $depth);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidArgumentException(
+                'Error when encoded json data: ' . json_last_error_msg()
+            );
+        }
+
+        return (string) $json;
+    }
 }

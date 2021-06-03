@@ -29,9 +29,9 @@
  */
 
 /**
- *  @file Env.php
+ *  @file Unit.php
  *
- *  The Env helper class
+ *  The Unit helper class
  *
  *  @package    Platine\Stdlib\Helper
  *  @author Platine Developers Team
@@ -47,54 +47,47 @@ declare(strict_types=1);
 namespace Platine\Stdlib\Helper;
 
 /**
- * Class Env
+ * Class Unit
  * @package Platine\Stdlib\Helper
  */
-class Env
+class Unit
 {
 
     /**
-     * Whether the application is running on CLI
-     * @return bool
+     * Convert the size like 4G, 7T, 19B to byte
+     * @param string $size
+     * @return int
      */
-    public static function isCli(): bool
+    public static function sizeInBytes(string $size): int
     {
-        return PHP_SAPI === 'cli';
+        $unit = 'B';
+        $units = ['B' => 0, 'K' => 1, 'M' => 2, 'G' => 3, 'T' => 4];
+        $matches = [];
+        preg_match('/(?<size>[\d\.]+)\s*(?<unit>b|k|m|g|t)?/i', $size, $matches);
+        if (array_key_exists('unit', $matches)) {
+            $unit = strtoupper($matches['unit']);
+        }
+        return (int)(floatval($matches['size']) * pow(1024, $units[$unit]));
     }
 
     /**
-     * Whether the application is running on PHP Xdebug
-     * @return bool
+     * Format to human readable size
+     * @param int $size
+     * @param int $precision
+     * @return string
      */
-    public static function isPhpDbg(): bool
+    public static function formatSize(int $size, int $precision = 2): string
     {
-        return PHP_SAPI === 'phpdbg';
-    }
+        if ($size > 0) {
+            $base = log($size) / log(1024);
+            $suffixes = ['B', 'K', 'M', 'G', 'T'];
+            $suffix = '';
+            if (isset($suffixes[floor($base)])) {
+                $suffix = $suffixes[floor($base)];
+            }
+            return round(pow(1024, $base - floor($base)), $precision) . $suffix;
+        }
 
-    /**
-     * Whether the current environment is Cygwin
-     * @return bool
-     */
-    public static function isCygwin(): bool
-    {
-        return stripos(PHP_OS, 'CYGWIN') === 0;
-    }
-
-    /**
-     * Whether the current environment is Windows
-     * @return bool
-     */
-    public static function isWindows(): bool
-    {
-        return stripos(PHP_OS, 'WIN') === 0;
-    }
-
-    /**
-     * Whether the current environment is Mac
-     * @return bool
-     */
-    public static function isMac(): bool
-    {
-        return stripos(PHP_OS, 'Darwin') !== false;
+        return '';
     }
 }

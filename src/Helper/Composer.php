@@ -46,6 +46,9 @@ declare(strict_types=1);
 
 namespace Platine\Stdlib\Helper;
 
+use Composer\Autoload\ClassLoader;
+use RuntimeException;
+
 /**
  * Class Composer
  * @package Platine\Stdlib\Helper
@@ -53,5 +56,83 @@ namespace Platine\Stdlib\Helper;
 class Composer
 {
 
+    /**
+     * The composer class loader instance
+     * @var ClassLoader|null
+     */
+    protected static ?ClassLoader $classLoader = null;
 
+
+    /**
+     * Return the composer class loader instance
+     * @return ClassLoader
+     * @throws RuntimeException
+     */
+    public static function geClasstLoader(): ClassLoader
+    {
+        if (self::$classLoader) {
+            return self::$classLoader;
+        }
+
+        $autoloadFunctions = (array)spl_autoload_functions();
+        foreach ($autoloadFunctions as $loader) {
+            if (is_array($loader) && isset($loader[0])) {
+                $composerLoader = $loader[0];
+
+                if (
+                    is_object($composerLoader)
+                        && $composerLoader instanceof ClassLoader
+                ) {
+                    self::$classLoader = $composerLoader;
+
+                    return self::$classLoader;
+                }
+            }
+        }
+
+        throw new RuntimeException('Composer class loader not found');
+    }
+
+    /**
+     * Parse composer lock file and return the packages information
+     * @param string $path
+     * @param callable|null $filter
+     *
+     * @return array<mixed>
+     */
+    public static function parseLockFile(string $path, ?callable $filter = null): array
+    {
+        $filename = Path::normalizePathDS($path, true) . 'composer.lock';
+
+        if (!file_exists($filename)) {
+            throw new RuntimeException(sprintf(
+                'Composer lock file [%s] does not exists',
+                $filename
+            ));
+        }
+
+
+        $json = file_get_contents($filename);
+
+        if (!$json) {
+            return [];
+        }
+
+        /** @var array<mixed> $data */
+        $data = json_decode($json, true);
+        if (empty($data) || !isset($data['packages'])) {
+            return [];
+        }
+
+        $packages = [];
+        foreach ($data['packages'] as $pkg) {
+            if ($filter && $filter($pkg['name'], $pkg['type']) === false) {
+                continue;
+            }
+
+            $packages[] = $pkg;
+        }
+
+        return $packages;
+    }
 }
