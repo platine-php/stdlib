@@ -76,7 +76,7 @@ class PhpTest extends PlatineTestCase
           ],
           [
               'call',
-              [sprintf('%s::foo', phpCallClassMethodCallback::class), 'baz'],
+              [[new phpCallClassMethodCallback(), 'foo'], 'baz'],
               [],
               'barbaz'
           ],
@@ -94,7 +94,7 @@ class PhpTest extends PlatineTestCase
           ],
           [
               'call',
-              [[phpCallClassCommon::class, 'bar'], 'bar'],
+              [sprintf('%s::bar', phpCallClassCommon::class), 'bar'],
               [],
               'foobar'
           ],
