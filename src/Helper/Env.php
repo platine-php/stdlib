@@ -59,7 +59,7 @@ class Env
      */
     public static function isCli(): bool
     {
-        return PHP_SAPI === 'cli';
+        return php_sapi_name() === 'cli';
     }
 
     /**
@@ -68,7 +68,7 @@ class Env
      */
     public static function isPhpDbg(): bool
     {
-        return PHP_SAPI === 'phpdbg';
+        return php_sapi_name() === 'phpdbg';
     }
 
     /**

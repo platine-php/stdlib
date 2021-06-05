@@ -83,7 +83,10 @@ class Php
                     : $obj::$method(...$args);
         }
 
+        //Race condition
+        //@codeCoverageIgnoreStart
         return $callback(...$args);
+        //@codeCoverageIgnoreEnd
     }
 
     /**

@@ -65,10 +65,10 @@ class Xml
 
     /**
      * Transform an array to XML
-     * @param array<mixed> $data
+     * @param array<int|string, mixed|iterable> $data
      * @return string
      */
-    public static function encode(array $data): string
+    public static function encode($data): string
     {
         $xml = '<xml>';
         $xml .= self::arrayToXml($data);
@@ -91,21 +91,19 @@ class Xml
         );
 
         $jsonString = Json::encode($string);
-        $data = Json::decode($jsonString, true);
 
-        if ($data === false) {
-            return [];
-        }
+        /** @var array<mixed> $data */
+        $data = Json::decode($jsonString, true);
 
         return $data;
     }
 
     /**
      * Transform an array to XML
-     * @param array<string, mixed|iterable> $data
+     * @param array<int|string, mixed|iterable> $data
      * @return string
      */
-    public static function arrayToXml(array $data): string
+    public static function arrayToXml($data): string
     {
         $xml = '';
         if (!empty($data)) {
@@ -124,31 +122,6 @@ class Xml
         }
 
         return $xml;
-    }
-
-    /**
-     * Parse the given data to array
-     * @param array<mixed>|object $data
-     * @return array<mixed>
-     */
-    protected static function parseToArray($data): array
-    {
-        $res = [];
-        if (is_object($data)) {
-            $data = (array) $data;
-        }
-
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                if (is_iterable($value)) {
-                    $res[$key] = self::parseToArray($value);
-                } else {
-                    $res[$key] = $value;
-                }
-            }
-        }
-
-        return $res;
     }
 
     /**

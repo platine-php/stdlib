@@ -49,6 +49,7 @@ namespace Platine\Stdlib\Config;
 use Error;
 use InvalidArgumentException;
 use Platine\Stdlib\Contract\ConfigurationInterface;
+use Platine\Stdlib\Helper\Str;
 
 /**
  * Class AbstractConfiguration
@@ -94,7 +95,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
         $this->config = $config;
 
         foreach ($config as $name => $value) {
-            $key = str_replace('_', '', lcfirst(ucwords($name, '_')));
+            $key = Str::camel($name, true);
             if (property_exists($this, $key)) {
                 $this->checkValue($key, $value);
 
@@ -134,7 +135,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
             if ($error !== null) {
                 throw new Error(sprintf(
                     $error,
-                    $key,
+                    Str::snake($key),
                     $className ?? $expectedType,
                     is_object($value) ? get_class($value) : gettype($value)
                 ));

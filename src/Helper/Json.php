@@ -62,7 +62,7 @@ class Json
      * @param int $depth
      * @param int $options
      *
-     * @return mixed
+     * @return array<mixed>|object
      */
     public static function decode(
         string $json,

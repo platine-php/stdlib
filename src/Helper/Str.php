@@ -284,7 +284,7 @@ class Str
     public static function pad(
         $value,
         int $length,
-        string $padStr,
+        string $padStr = ' ',
         int $type = STR_PAD_BOTH
     ): string {
         if (!is_string($value)) {
@@ -306,7 +306,7 @@ class Str
     public static function padLeft(
         $value,
         int $length,
-        string $padStr
+        string $padStr = ' '
     ): string {
         return self::pad($value, $length, $padStr, STR_PAD_LEFT);
     }
@@ -321,7 +321,7 @@ class Str
     public static function padRight(
         $value,
         int $length,
-        string $padStr
+        string $padStr = ' '
     ): string {
         return self::pad($value, $length, $padStr, STR_PAD_RIGHT);
     }

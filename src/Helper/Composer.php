@@ -68,7 +68,7 @@ class Composer
      * @return ClassLoader
      * @throws RuntimeException
      */
-    public static function geClasstLoader(): ClassLoader
+    public static function getClasstLoader(): ClassLoader
     {
         if (self::$classLoader) {
             return self::$classLoader;

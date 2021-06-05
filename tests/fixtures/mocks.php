@@ -2,276 +2,279 @@
 
 declare(strict_types=1);
 
-namespace Platine\Console\Util;
+namespace Platine\Stdlib\Helper;
 
-$mock_explode_to_false = false;
+use Platine\Test\Fixture\Stdlib\ComposerAutoloadObject;
 
-function explode(string $separator, string $string)
+$mock_array_rand_to_1 = false;
+$mock_shuffle_to_1 = false;
+$mock_mt_srand_to_void = false;
+$mock_spl_autoload_functions_to_empty = false;
+$mock_spl_autoload_functions_to_array = false;
+$mock_file_exists_to_false = false;
+$mock_file_exists_to_true = false;
+$mock_file_get_contents_to_false = false;
+$mock_file_get_contents_to_foo = false;
+$mock_json_decode_to_empty = false;
+$mock_json_decode_to_array = false;
+$mock_php_sapi_name_to_cli = false;
+$mock_php_sapi_name_to_phpdbg = false;
+$mock_php_sapi_name_to_foo = false;
+$mock_php_stripos_to_cygwin = false;
+$mock_php_stripos_to_win = false;
+$mock_php_stripos_to_mac = false;
+$mock_php_stripos_to_foo = false;
+$mock_realpath_to_false = false;
+$mock_realpath_to_foo = false;
+$mock_str_split_to_false = false;
+$mock_random_int = false;
+$mock_md5_to_param = false;
+$mock_chr_to_param = false;
+$mock_base64_encode_to_param = false;
+$mock_bin2hex_to_param = false;
+$mock_ctype_alpha_to_true = false;
+$mock_random_bytes = false;
+
+function base64_encode(string $val)
 {
-    global $mock_explode_to_false;
-    if ($mock_explode_to_false) {
-        return false;
+    global $mock_base64_encode_to_param;
+    if ($mock_base64_encode_to_param) {
+        return $val;
     }
 
-    return \explode($separator, $string);
+
+    return \base64_encode($val);
 }
 
-
-namespace Platine\Console\Command;
-
-$mock_function_exists_to_true = false;
-$mock_function_exists_to_false = false;
-$mock_is_resource_to_false = false;
-$mock_is_resource_to_true = false;
-$mock_proc_terminate_to_true = false;
-$mock_proc_terminate_to_false = false;
-$mock_proc_close_to_zero = false;
-$mock_proc_open_to_res = false;
-$mock_proc_open_to_false = false;
-$mock_microtime_to_1 = false;
-$mock_stream_get_contents_to_foo = false;
-$mock_stream_get_contents_to_false = false;
-$mock_strtoupper_to_WIN = false;
-$mock_fwrite_to_int = false;
-$mock_fclose_to_true = false;
-$mock_proc_get_status_to_false = false;
-$mock_proc_get_status_to_array = false;
-$mock_proc_get_status_to_array_running_false = false;
-$mock_usleep_to_void = false;
-$mock_stream_set_blocking_to_true = false;
-
-
-function stream_set_blocking($val, $bool)
+function bin2hex(string $val)
 {
-    global $mock_stream_set_blocking_to_true;
+    global $mock_bin2hex_to_param;
+    if ($mock_bin2hex_to_param) {
+        return $val;
+    }
 
-    if ($mock_stream_set_blocking_to_true) {
+
+    return \bin2hex($val);
+}
+
+function random_bytes(int $val)
+{
+    global $mock_random_bytes;
+    if ($mock_random_bytes) {
+        return $val % 2 == 0 ? 'foo' : 'bar';
+    }
+
+
+    return \random_bytes($val);
+}
+
+function ctype_alpha($val)
+{
+    global $mock_ctype_alpha_to_true;
+    if ($mock_ctype_alpha_to_true) {
         return true;
     }
 
-    return \stream_set_blocking($val, $bool);
+
+    return \ctype_alpha($val);
 }
 
-function usleep($val)
+function chr($val)
 {
-    global $mock_usleep_to_void;
-
-    if ($mock_usleep_to_void) {
-        return;
+    global $mock_chr_to_param;
+    if ($mock_chr_to_param) {
+        return $val;
     }
 
-    return \usleep($val);
+
+    return \chr($val);
 }
 
-function fclose($val)
-{
-    global $mock_fclose_to_true;
 
-    if ($mock_fclose_to_true) {
-        return true;
+function md5($val)
+{
+    global $mock_md5_to_param;
+    if ($mock_md5_to_param) {
+        return $val;
     }
 
-    return \fclose($val);
+
+    return \md5($val);
 }
 
-
-function proc_get_status($val)
+function random_int(int $min, int $max)
 {
-    global $mock_proc_get_status_to_false,
-            $mock_proc_get_status_to_array,
-            $mock_proc_get_status_to_array_running_false;
+    global $mock_random_int;
+    if ($mock_random_int) {
+        return $max % 3 == 0 ? 1 : ($max % 2 == 0 ? 2 : 0);
+    }
 
-    if ($mock_proc_get_status_to_false) {
+
+    return \random_int($min, $max);
+}
+
+function str_split(string $name, int $length = 1)
+{
+    global $mock_str_split_to_false;
+    if ($mock_str_split_to_false) {
         return false;
     }
 
-    if ($mock_proc_get_status_to_array) {
-        return [
-            'command' => 'cmd',
-            'pid' => 1829,
-            'running' => $mock_proc_get_status_to_array_running_false
-                        ? false
-                        : true,
-            'signaled' => true,
-            'stopped' => false,
-            'exitcode' => 0,
-            'termsig' => 034,
-            'stopsig' => 134,
-        ];
-    }
 
-    return \proc_get_status($val);
+    return \str_split($name, $length);
 }
 
-function fwrite($val, $content)
+function realpath(string $name)
 {
-    global $mock_fwrite_to_int;
-
-    if ($mock_fwrite_to_int) {
-        return 192;
-    }
-
-    return \fwrite($val, $content);
-}
-
-function strtoupper($val)
-{
-    global $mock_strtoupper_to_WIN;
-
-    if ($mock_strtoupper_to_WIN) {
-        return 'WIN';
-    }
-
-    return \strtoupper($val);
-}
-
-function stream_get_contents($val)
-{
-    global $mock_stream_get_contents_to_foo,
-            $mock_stream_get_contents_to_false;
-
-    if ($mock_stream_get_contents_to_false) {
+    global $mock_realpath_to_false,
+     $mock_realpath_to_foo;
+    if ($mock_realpath_to_false) {
         return false;
     }
 
-    if ($mock_stream_get_contents_to_foo) {
+    if ($mock_realpath_to_foo) {
         return 'foo';
     }
 
-    return \stream_get_contents($val);
+    return \realpath($name);
 }
 
-function microtime($val)
+function stripos(string $haystack, string $needle, int $offset = 0)
 {
-    global $mock_microtime_to_1;
-    if ($mock_microtime_to_1) {
-        return 1.0;
-    }
-
-    return \microtime($val);
-}
-
-function proc_open(
-    $cmd,
-    array $descriptorspec,
-    array &$pipes,
-    string $cwd = null,
-    array $env = null,
-    array $other_options = null
-) {
-    global $mock_proc_open_to_res,
-            $mock_proc_open_to_false;
-    if ($mock_proc_open_to_false) {
-        return false;
-    }
-
-    if ($mock_proc_open_to_res) {
-        return;
-    }
-
-    return \proc_open(
-        $cmd,
-        $descriptorspec,
-        $pipes,
-        $cwd,
-        $env,
-        $other_options
-    );
-}
-
-function proc_close($val)
-{
-    global $mock_proc_close_to_zero;
-    if ($mock_proc_close_to_zero) {
+     global $mock_php_stripos_to_cygwin,
+     $mock_php_stripos_to_win,
+     $mock_php_stripos_to_mac,
+     $mock_php_stripos_to_foo;
+    if ($mock_php_stripos_to_cygwin) {
         return 0;
     }
 
-    return \proc_close($val);
-}
-
-function proc_terminate($val)
-{
-    global $mock_proc_terminate_to_false,
-            $mock_proc_terminate_to_true;
-    if ($mock_proc_terminate_to_true) {
-        return true;
+    if ($mock_php_stripos_to_win) {
+        return 0;
     }
 
-    if ($mock_proc_terminate_to_false) {
+    if ($mock_php_stripos_to_mac) {
+        return 0;
+    }
+
+    if ($mock_php_stripos_to_foo) {
         return false;
     }
 
-    return \proc_terminate($val);
+    return \stripos($haystack, $needle, $offset);
 }
 
-function function_exists($val)
+function php_sapi_name()
 {
-    global $mock_function_exists_to_true,
-            $mock_function_exists_to_false;
-    if ($mock_function_exists_to_true) {
-        return true;
+    global $mock_php_sapi_name_to_cli,
+     $mock_php_sapi_name_to_phpdbg,
+     $mock_php_sapi_name_to_foo;
+    if ($mock_php_sapi_name_to_cli) {
+        return 'cli';
     }
 
-    if ($mock_function_exists_to_false) {
-        return false;
+    if ($mock_php_sapi_name_to_phpdbg) {
+        return 'phpdbg';
     }
 
-    return \function_exists($val);
-}
-
-function is_resource($val)
-{
-    global $mock_is_resource_to_true,
-            $mock_is_resource_to_false;
-    if ($mock_is_resource_to_true) {
-        return true;
-    }
-
-    if ($mock_is_resource_to_false) {
-        return false;
-    }
-
-    return \is_resource($val);
-}
-
-namespace Platine\Console\Input;
-
-$mock_strtoupper_to_WIN = false;
-$mock_shell_exec_to_null = false;
-$mock_shell_exec_to_foo = false;
-$mock_stream_select_to_one = false;
-
-function stream_select(array &$read, array &$write, array &$except, int $tv_sec)
-{
-    global $mock_stream_select_to_one;
-    if ($mock_stream_select_to_one) {
-        return 1;
-    }
-
-    return \stream_select($read, $write, $except, $tv_sec);
-}
-
-function strtoupper(string $string)
-{
-    global $mock_strtoupper_to_WIN;
-    if ($mock_strtoupper_to_WIN) {
-        return 'WIN';
-    }
-
-    return \strtoupper($string);
-}
-
-function shell_exec(string $string)
-{
-    global $mock_shell_exec_to_null,
-           $mock_shell_exec_to_foo;
-    if ($mock_shell_exec_to_null) {
-        return null;
-    }
-
-    if ($mock_shell_exec_to_foo) {
+    if ($mock_php_sapi_name_to_foo) {
         return 'foo';
     }
 
-    return \shell_exec($string);
+    return \php_sapi_name();
+}
+
+function json_decode(string $name, $assoc, int $depth = 512, int $flags = 0)
+{
+    global $mock_json_decode_to_empty,
+     $mock_json_decode_to_array;
+    if ($mock_json_decode_to_empty) {
+        return [];
+    }
+
+    if ($mock_json_decode_to_array) {
+        return ['packages' => [
+            [
+                'name' => 'foo',
+                'type' => 'library',
+            ],
+        ]];
+    }
+
+    return \json_decode($name, $assoc, $depth, $flags);
+}
+
+function file_get_contents(string $name)
+{
+    global $mock_file_get_contents_to_false,
+     $mock_file_get_contents_to_foo;
+    if ($mock_file_get_contents_to_false) {
+        return false;
+    }
+
+    if ($mock_file_get_contents_to_foo) {
+        return 'foo';
+    }
+
+    return \file_get_contents($name);
+}
+
+function file_exists(string $name)
+{
+    global $mock_file_exists_to_false,
+     $mock_file_exists_to_true;
+    if ($mock_file_exists_to_false) {
+        return false;
+    }
+
+    if ($mock_file_exists_to_true) {
+        return true;
+    }
+
+    return \file_exists($name);
+}
+
+function spl_autoload_functions()
+{
+    global $mock_spl_autoload_functions_to_empty,
+     $mock_spl_autoload_functions_to_array;
+    if ($mock_spl_autoload_functions_to_empty) {
+        return [];
+    }
+
+    if ($mock_spl_autoload_functions_to_array) {
+        return [[new ComposerAutoloadObject()]];
+    }
+
+    return \spl_autoload_functions();
+}
+
+function array_rand(array $a, $num = 1)
+{
+    global $mock_array_rand_to_1;
+    if ($mock_array_rand_to_1) {
+        return 1;
+    }
+
+    return \array_rand($a, $num);
+}
+
+function shuffle(array &$a)
+{
+    global $mock_shuffle_to_1;
+    if ($mock_shuffle_to_1) {
+        $a = [4];
+    }
+
+    return \shuffle($a);
+}
+
+function mt_srand(int $a = 0)
+{
+    global $mock_mt_srand_to_void;
+    if ($mock_mt_srand_to_void) {
+        return 1;
+    }
+
+    return \mt_srand($a);
 }

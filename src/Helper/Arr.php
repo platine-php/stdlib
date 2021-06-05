@@ -153,7 +153,7 @@ class Arr
      * for the given key or property name.
      *
      * @param array<mixed>|object $object
-     * @param string|Closure|array<mixed> $key
+     * @param int|string|Closure|array<mixed> $key
      * @param mixed $default
      *
      * @return mixed If the key does not exist in the array or object,
@@ -215,12 +215,12 @@ class Arr
      * Remove an item from an array and returns the value.
      * If the key does not exist in the array, the default value will be returned
      * @param array<mixed> $array
-     * @param string $key
+     * @param string|int $key
      * @param mixed $default
      *
      * @return mixed|null
      */
-    public static function remove(array &$array, string $key, $default = null)
+    public static function remove(array &$array, $key, $default = null)
     {
         if (isset($array[$key]) || array_key_exists($key, $array)) {
             $value = $array[$key];
@@ -236,7 +236,7 @@ class Arr
     /**
      * Return all of the given array except for a specified keys.
      * @param array<mixed> $array
-     * @param array<string>|string $keys
+     * @param array<int, int|string>|string|int $keys
      * @return array<mixed>
      */
     public static function except(array $array, $keys): array
@@ -249,7 +249,7 @@ class Arr
     /**
      * Remove one or many array items from a given array using "dot" notation.
      * @param array<mixed> $array
-     * @param array<string>|string $keys
+     * @param array<int, int|string>|string|int $keys
      * @return void
      */
     public static function forget(array &$array, $keys): void
@@ -271,30 +271,32 @@ class Arr
                 continue;
             }
 
-            $parts = explode('.', $key);
+            if (is_string($key)) {
+                $parts = explode('.', $key);
 
-            $array = &$original;
-            while (count($parts) > 1) {
-                $part = array_shift($parts);
-                if (isset($array[$part]) && is_array($array[$part])) {
-                    $array = &$array[$part];
-                } else {
-                    continue 2;
+                $array = &$original;
+                while (count($parts) > 1) {
+                    $part = array_shift($parts);
+                    if (isset($array[$part]) && is_array($array[$part])) {
+                        $array = &$array[$part];
+                    } else {
+                        continue 2;
+                    }
                 }
-            }
 
-            unset($array[array_shift($parts)]);
+                unset($array[array_shift($parts)]);
+            }
         }
     }
 
     /**
      * Get a value from the array, and remove it.
      * @param array<mixed> $array
-     * @param string $key
+     * @param string|int $key
      * @param mixed $default
      * @return mixed
      */
-    public static function pull(array &$array, string $key, $default = null)
+    public static function pull(array &$array, $key, $default = null)
     {
         $value = static::get($array, $key, $default);
 
@@ -323,7 +325,7 @@ class Arr
      * @param string|string[]|Closure[]|null $groups
      * @return array<mixed> the indexed and/or grouped array
      */
-    public static function index(array $array, $key, $groups = []): array
+    public static function index(array $array, $key = null, $groups = []): array
     {
         $result = [];
         if (!is_array($groups)) {
@@ -364,7 +366,7 @@ class Arr
      * Returns the values of a specified column in an array.
      * The input array should be multidimensional or an array of objects.
      * @param array<mixed> $array
-     * @param string|Closure $name
+     * @param int|string|Closure $name
      * @param bool $keepKeys
      * @return array<mixed>
      */
@@ -592,12 +594,14 @@ class Arr
     {
         if ($array instanceof Traversable) {
             $array = iterator_to_array($array);
-            foreach ($array as $value) {
-                if ($needle == $value && (!$strict || $needle === $value)) {
-                    return true;
-                }
+        }
+
+        foreach ($array as $value) {
+            if ($needle == $value && (!$strict || $needle === $value)) {
+                return true;
             }
         }
+
 
         return in_array($needle, $array, $strict);
     }
@@ -748,11 +752,11 @@ class Arr
      * Get an item from an array using "dot" notation.
      *
      * @param array<mixed>|ArrayAccess<string|int, mixed> $array
-     * @param string|null $key
+     * @param string|int|null $key
      * @param mixed $default
      * @return mixed
      */
-    public static function get($array, ?string $key = null, $default = null)
+    public static function get($array, $key = null, $default = null)
     {
         if ($key === null) {
             return $array;
@@ -782,20 +786,25 @@ class Arr
      * Check if an item exists in an array using "dot" notation.
      *
      * @param array<mixed>|ArrayAccess<string|int, mixed> $array
-     * @param string $key
+     * @param string|int $key
      * @return bool
      */
-    public static function has($array, string $key): bool
+    public static function has($array, $key): bool
     {
         if (empty($array)) {
             return false;
         }
 
         if (
-            is_array($array) && array_key_exists($key, $array)
-            || $array instanceof ArrayAccess && $array->offsetExists($key)
+            (is_array($array) && array_key_exists($key, $array))
+            || ($array instanceof ArrayAccess && $array->offsetExists($key))
         ) {
             return true;
+        }
+
+        // Fix: If is int, stop continue find.
+        if (!is_string($key)) {
+            return false;
         }
 
         foreach (explode('.', $key) as $segment) {
@@ -818,12 +827,12 @@ class Arr
      * @param array<mixed> $array
      * @param string|null $key
      * @param mixed $value
-     * @return array<mixed>
+     * @return void
      */
-    public static function set(array &$array, ?string $key, $value): array
+    public static function set(array &$array, ?string $key, $value): void
     {
         if ($key === null) {
-            return $array = $value;
+            return;
         }
 
         $keys = explode('.', $key);
@@ -843,8 +852,6 @@ class Arr
         }
 
         $array[array_shift($keys)] = $value;
-
-        return $array;
     }
 
     /**
@@ -1028,31 +1035,33 @@ class Arr
     }
 
     /**
-     * Pluck an array of values from an array.
+     * Pluck an array of values from an arrays.
      * @param array<int, array<mixed>> $array
-     * @param string $value
-     * @param string|null $key
+     * @param string|int $value
+     * @param string|int|null $key
      * @return array<mixed>
      */
-    public static function pluck(array $array, string $value, ?string $key = null): array
+    public static function pluck(array $array, $value, $key = null): array
     {
         $results = [];
         foreach ($array as $item) {
-            $itemValue = static::get($item, $value);
+            if (is_array($item)) {
+                $itemValue = static::get($item, $value);
 
-            // If the key is "null", we will just append the value to the array
-            // and keep looping. Otherwise we will key the array using
-            // the value of the key we received from the developer.
-            // Then we'll return the final array form.
-            if ($key === null) {
-                $results[] = $itemValue;
-            } else {
-                $itemKey = static::get($item, $key);
-                if (is_object($itemKey) && method_exists($itemKey, '__toString')) {
-                    $itemKey = (string)$itemKey;
+                // If the key is "null", we will just append the value to the array
+                // and keep looping. Otherwise we will key the array using
+                // the value of the key we received from the developer.
+                // Then we'll return the final array form.
+                if ($key === null) {
+                    $results[] = $itemValue;
+                } else {
+                    $itemKey = static::get($item, $key);
+                    if (is_object($itemKey) && method_exists($itemKey, '__toString')) {
+                        $itemKey = (string)$itemKey;
+                    }
+
+                    $results[$itemKey] = $itemValue;
                 }
-
-                $results[$itemKey] = $itemValue;
             }
         }
 

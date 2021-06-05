@@ -41,7 +41,8 @@
             "Platine\\Test\\": "tests"
         },
         "files": [
-            "tests/fixtures/mocks.php"
+            "tests/fixtures/mocks.php",
+            "tests/fixtures/fixtures.php"
         ]
     },
     
