@@ -7,7 +7,7 @@ namespace Platine\Test\Stdlib\Helper;
 use ArrayAccess;
 use ArrayIterator;
 use InvalidArgumentException;
-use Platine\PlatineTestCase;
+use Platine\Dev\PlatineTestCase;
 use Platine\Stdlib\Contract\Arrayable;
 use Platine\Stdlib\Helper\Arr;
 use stdClass;

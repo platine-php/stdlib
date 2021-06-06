@@ -74,11 +74,19 @@ interface ConfigurationInterface
     public function load(array $config): void;
 
     /**
-     * Return the value of validation rules
+     * Return the validation rules
      * with format of:
      * - property key => type (result of gettype())
      * - For instance use format of object::FullClassName
      * @return array<string, string>
      */
     public function getValidationRules(): array;
+
+    /**
+     * Return the setters maps
+     * with format of:
+     * - property key => method name
+     * @return array<string, string>
+     */
+    public function getSetterMaps(): array;
 }

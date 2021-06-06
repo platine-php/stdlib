@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Platine\Test\Stdlib\Helper;
 
 use Exception;
-use Platine\PlatineTestCase;
+use Platine\Dev\PlatineTestCase;
 use Platine\Stdlib\Helper\Php;
 use Platine\Test\Fixture\Stdlib\phpCallClassCommon;
 use Platine\Test\Fixture\Stdlib\phpCallClassInvokeCallback;

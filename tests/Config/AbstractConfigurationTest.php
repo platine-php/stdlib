@@ -6,7 +6,7 @@ namespace Platine\Test\Stdlib\Config;
 
 use Error;
 use InvalidArgumentException;
-use Platine\PlatineTestCase;
+use Platine\Dev\PlatineTestCase;
 use Platine\Stdlib\Config\AbstractConfiguration;
 use Platine\Test\Fixture\Stdlib\MyTestAppConfiguration;
 use stdClass;
@@ -32,7 +32,7 @@ class AbstractConfigurationTest extends PlatineTestCase
         $cfg = new MyTestAppConfiguration([
             'a_int' => 10,
             'b_bool' => true,
-            'c_obj' => new \stdClass(),
+            'c_obj' => new stdClass(),
             'd_arr' => [1, 2, 3],
         ]);
 
@@ -65,5 +65,15 @@ class AbstractConfigurationTest extends PlatineTestCase
         $cfg = new MyTestAppConfiguration([
             'c_obj' => 123,
         ]);
+    }
+
+    public function testGetter(): void
+    {
+        $cfg = new class extends AbstractConfiguration{
+
+        };
+
+        $this->assertEmpty($cfg->getSetterMaps());
+        $this->assertEmpty($cfg->getValidationRules());
     }
 }

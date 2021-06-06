@@ -49,6 +49,7 @@ namespace Platine\Stdlib\Config;
 use Error;
 use InvalidArgumentException;
 use Platine\Stdlib\Contract\ConfigurationInterface;
+use Platine\Stdlib\Helper\Arr;
 use Platine\Stdlib\Helper\Str;
 
 /**
@@ -77,14 +78,14 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function get(string $name)
     {
-        if (!array_key_exists($name, $this->config)) {
+        if (!Arr::has($this->config, $name)) {
             throw new InvalidArgumentException(sprintf(
-                'Invalid configuration [%s]',
+                'Configuration [%s] does not exist',
                 $name
             ));
         }
 
-        return $this->config[$name];
+        return Arr::get($this->config, $name);
     }
 
     /**
@@ -93,27 +94,49 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     public function load(array $config): void
     {
         $this->config = $config;
+        $rules = $this->getValidationRules();
+        $setters = $this->getSetterMaps();
 
         foreach ($config as $name => $value) {
             $key = Str::camel($name, true);
             if (property_exists($this, $key)) {
-                $this->checkValue($key, $value);
+                $this->checkValue($key, $value, $rules);
 
-                $this->{$key} = $value;
+                if (Arr::has($setters, $key)) {
+                    $method = Arr::get($setters, $key);
+                    $this->{$method}($value);
+                } else {
+                    $this->{$key} = $value;
+                }
             }
         }
+    }
+
+    /**
+     * {@inheritedoc}
+     */
+    public function getValidationRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritedoc}
+     */
+    public function getSetterMaps(): array
+    {
+        return [];
     }
 
     /**
      * Check the configuration for the given type
      * @param string $key
      * @param mixed $value
+     * @param array<string, string> $rules
      * @return void
      */
-    private function checkValue(string $key, $value): void
+    private function checkValue(string $key, $value, array $rules = []): void
     {
-        $rules = $this->getValidationRules();
-
         if (array_key_exists($key, $rules)) {
             $expectedType = $rules[$key];
             $type = gettype($value);

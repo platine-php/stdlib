@@ -60,6 +60,20 @@ class MyTestAppConfiguration extends AbstractConfiguration
             'dArr' => 'array',
         ];
     }
+
+    public function getSetterMaps(): array
+    {
+        return [
+           'dArr' => 'setArray'
+        ];
+    }
+
+    public function setArray(array $val): self
+    {
+        $this->dArr = $val;
+
+        return $this;
+    }
 }
 
 function phpCallCallbackSimpleFunction()

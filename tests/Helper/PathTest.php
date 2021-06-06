@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Platine\Test\Stdlib\Helper;
 
 use InvalidArgumentException;
-use Platine\PlatineTestCase;
+use Platine\Dev\PlatineTestCase;
 use Platine\Stdlib\Helper\Path;
 
 /**
