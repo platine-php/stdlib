@@ -106,7 +106,12 @@ abstract class AbstractConfiguration implements ConfigurationInterface
                     $method = Arr::get($setters, $key);
                     $this->{$method}($value);
                 } else {
-                    $this->{$key} = $value;
+                    $setterMethod = 'set' . ucfirst($key);
+                    if (method_exists($this, $setterMethod)) {
+                        $this->{$setterMethod}($value);
+                    } else {
+                        $this->{$key} = $value;
+                    }
                 }
             }
         }
