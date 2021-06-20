@@ -67,6 +67,13 @@ interface ConfigurationInterface
     public function get(string $name);
 
     /**
+     * Check whether the given configuration exists
+     * @param string $name
+     * @return bool
+     */
+    public function has(string $name): bool;
+
+    /**
      * Load the configuration
      * @param array<string, mixed> $config
      * @return void

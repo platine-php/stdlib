@@ -61,6 +61,11 @@ class MyTestAppConfiguration extends AbstractConfiguration
         ];
     }
 
+    public function setAint(int $a)
+    {
+        $this->aInt = $a;
+    }
+
     public function getSetterMaps(): array
     {
         return [

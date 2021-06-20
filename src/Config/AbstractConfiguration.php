@@ -78,7 +78,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function get(string $name)
     {
-        if (!Arr::has($this->config, $name)) {
+        if (!$this->has($name)) {
             throw new InvalidArgumentException(sprintf(
                 'Configuration [%s] does not exist',
                 $name
@@ -86,6 +86,14 @@ abstract class AbstractConfiguration implements ConfigurationInterface
         }
 
         return Arr::get($this->config, $name);
+    }
+
+    /**
+     * {@inheritedoc}
+     */
+    public function has(string $name): bool
+    {
+        return Arr::has($this->config, $name);
     }
 
     /**
