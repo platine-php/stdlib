@@ -54,10 +54,12 @@ class MyTestAppConfiguration extends AbstractConfiguration
     public function getValidationRules(): array
     {
         return [
-            'aInt' => 'integer',
-            'bBool' => 'boolean',
-            'cObj' => 'object::' . (stdClass::class),
-            'dArr' => 'array',
+            'a_int' => 'integer',
+            'b_bool' => 'boolean',
+            'c_obj' => 'object::' . (stdClass::class),
+            'd_arr' => 'array',
+            'd_arr.foo.bar' => 'integer',
+            'd_arr.state' => 'boolean',
         ];
     }
 

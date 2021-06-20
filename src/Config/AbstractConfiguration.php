@@ -105,21 +105,22 @@ abstract class AbstractConfiguration implements ConfigurationInterface
         $rules = $this->getValidationRules();
         $setters = $this->getSetterMaps();
 
+        foreach ($rules as $name => $type) {
+            $this->checkType($name, $type);
+        }
+
         foreach ($config as $name => $value) {
             $key = Str::camel($name, true);
-            if (property_exists($this, $key)) {
-                $this->checkValue($key, $value, $rules);
 
-                if (Arr::has($setters, $key)) {
-                    $method = Arr::get($setters, $key);
-                    $this->{$method}($value);
+            if (Arr::has($setters, $key)) {
+                $method = Arr::get($setters, $key);
+                $this->{$method}($value);
+            } else {
+                $setterMethod = 'set' . ucfirst($key);
+                if (method_exists($this, $setterMethod)) {
+                    $this->{$setterMethod}($value);
                 } else {
-                    $setterMethod = 'set' . ucfirst($key);
-                    if (method_exists($this, $setterMethod)) {
-                        $this->{$setterMethod}($value);
-                    } else {
-                        $this->{$key} = $value;
-                    }
+                    $this->{$key} = $value;
                 }
             }
         }
@@ -143,39 +144,42 @@ abstract class AbstractConfiguration implements ConfigurationInterface
 
     /**
      * Check the configuration for the given type
-     * @param string $key
-     * @param mixed $value
-     * @param array<string, string> $rules
+     * @param string $key the configuration
+     *  key to be checked can be dot notation
+     * @param string $type
      * @return void
      */
-    private function checkValue(string $key, $value, array $rules = []): void
+    private function checkType(string $key, string $type): void
     {
-        if (array_key_exists($key, $rules)) {
-            $expectedType = $rules[$key];
-            $type = gettype($value);
-            $className = null;
-            if (strpos($expectedType, 'object::') === 0) {
-                $className = substr($expectedType, 8);
-            }
+        if (!Arr::has($this->config, $key)) {
+            return;
+        }
 
-            $error = null;
+        $value = Arr::get($this->config, $key, null);
 
-            if ($className !== null) {
-                if (!($value instanceof $className)) {
-                    $error = 'Invalid configuration [%s] instance value, expected [%s], but got [%s]';
-                }
-            } elseif ($type !== $expectedType) {
-                $error = 'Invalid configuration [%s] value, expected [%s], but got [%s]';
-            }
+        $valueType = gettype($value);
+        $className = null;
+        if (strpos($type, 'object::') === 0) {
+            $className = substr($type, 8);
+        }
 
-            if ($error !== null) {
-                throw new Error(sprintf(
-                    $error,
-                    Str::snake($key),
-                    $className ?? $expectedType,
-                    is_object($value) ? get_class($value) : gettype($value)
-                ));
+        $error = null;
+
+        if ($className !== null) {
+            if (!($value instanceof $className)) {
+                $error = 'Invalid configuration [%s] instance value, expected [%s], but got [%s]';
             }
+        } elseif ($type !== $valueType) {
+            $error = 'Invalid configuration [%s] value, expected [%s], but got [%s]';
+        }
+
+        if ($error !== null) {
+            throw new Error(sprintf(
+                $error,
+                Str::snake($key),
+                $className ?? $type,
+                is_object($value) ? get_class($value) : gettype($value)
+            ));
         }
     }
 }

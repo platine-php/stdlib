@@ -33,13 +33,13 @@ class AbstractConfigurationTest extends PlatineTestCase
             'a_int' => 10,
             'b_bool' => true,
             'c_obj' => new stdClass(),
-            'd_arr' => [1, 2, 3],
+            'd_arr' => [1, 2, 3, 'state' => false, 'foo' => ['bar' => 3]],
         ]);
 
         $this->assertEquals(10, $cfg->get('a_int'));
         $this->assertEquals(true, $cfg->get('b_bool'));
         $this->assertInstanceOf(stdClass::class, $cfg->get('c_obj'));
-        $this->assertEquals([1, 2, 3], $cfg->get('d_arr'));
+        $this->assertCount(5, $cfg->get('d_arr'));
     }
 
     public function testGetConfigNotFound(): void
