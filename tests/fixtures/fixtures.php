@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Platine\Test\Fixture\Stdlib;
 
 use Composer\Autoload\ClassLoader;
+use JsonSerializable;
 use Platine\Stdlib\Config\AbstractConfiguration;
 use stdClass;
 
@@ -23,10 +24,39 @@ class phpCallClassMethodCallback
     }
 }
 
+class Stringify__toString
+{
+    public function __toString(): string
+    {
+        return __CLASS__;
+    }
+}
+
+class StringifytoString
+{
+    public function toString(): string
+    {
+        return __CLASS__;
+    }
+}
+
+class StringifyJson implements JsonSerializable
+{
+
+    public function jsonSerialize()
+    {
+        return [1, 2, 3];
+    }
+}
+
 class phpCallClassCommon
 {
     public function foo($a)
     {
+        function jsonSerialize(): mixed
+        {
+        }
+
         return 'bar' . $a;
     }
 

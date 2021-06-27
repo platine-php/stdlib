@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Platine\Test\Stdlib\Helper;
 
+use ArrayIterator;
+use DateTime;
+use Exception;
 use Platine\Dev\PlatineTestCase;
 use Platine\Stdlib\Helper\Str;
+use Platine\Test\Fixture\Stdlib\Stringify__toString;
+use Platine\Test\Fixture\Stdlib\StringifyJson;
+use Platine\Test\Fixture\Stdlib\StringifytoString;
+use stdClass;
 
 /**
  * Str class tests
@@ -65,6 +72,33 @@ class StrTest extends PlatineTestCase
         $this->assertEquals('ABCore', Str::studly('aB_Core'));
     }
 
+    public function testStringifyResource(): void
+    {
+        $fp = fopen('php://temp', 'r');
+        $str = Str::stringify($fp);
+        fclose($fp);
+        $this->assertEquals('resource<stream>', $str);
+    }
+
+    public function testStringifyDefault(): void
+    {
+        global $mock_is_object_to_false;
+        $mock_is_object_to_false = true;
+        $o = new stdClass();
+        $str = Str::stringify($o);
+        $this->assertEquals('object', $str);
+    }
+
+    public function testStringifyThrowable(): void
+    {
+        $ex = new Exception('My exception');
+        $str = Str::stringify($ex);
+        $this->assertEquals(
+            'Exception { "My exception", 0, ' . __FILE__ . ' #94 }',
+            $str
+        );
+    }
+
     /**
      * Data provider for "testCommonMethods"
      * @return array
@@ -77,6 +111,102 @@ class StrTest extends PlatineTestCase
               ['aé'],
               [],
               'ae'
+          ],
+          [
+              'stringify',
+              [null],
+              [],
+              'null'
+          ],
+          [
+              'stringify',
+              [true],
+              [],
+              'true'
+          ],
+          [
+              'stringify',
+              [false],
+              [],
+              'false'
+          ],
+          [
+              'stringify',
+              ['foo'],
+              [],
+              '"foo"'
+          ],
+          [
+              'stringify',
+              [34],
+              [],
+              '34'
+          ],
+          [
+              'stringify',
+              [34.5],
+              [],
+              '34.5'
+          ],
+          [
+              'stringify',
+              [[]],
+              [],
+              '[]'
+          ],
+          [
+              'stringify',
+              [[1, 3, 4]],
+              [],
+              '[1, 3, 4]'
+          ],
+          [
+              'stringify',
+              [[1, 3, 4, 'name' => 'foo']],
+              [],
+              '[1, 3, 4, "foo"]'
+          ],
+          [
+              'stringify',
+              [['foo' => 34, 1, 3, 4]],
+              [],
+              '["foo" => 34, 0 => 1, 1 => 3, 2 => 4]'
+          ],
+          [
+              'stringify',
+              [new stdClass()],
+              [],
+              stdClass::class
+          ],
+          [
+              'stringify',
+              [new ArrayIterator([1, 3, 5])],
+              [],
+              'ArrayIterator [1, 3, 5]'
+          ],
+          [
+              'stringify',
+              [new DateTime('2021-06-27')],
+              [],
+              'DateTime { 2021-06-27T00:00:00+00:00 }'
+          ],
+          [
+              'stringify',
+              [new Stringify__toString()],
+              [],
+              sprintf('%s { %s }', Stringify__toString::class, Stringify__toString::class)
+          ],
+          [
+              'stringify',
+              [new StringifytoString()],
+              [],
+              sprintf('%s { %s }', StringifytoString::class, StringifytoString::class)
+          ],
+          [
+              'stringify',
+              [new StringifyJson()],
+              [],
+              sprintf('%s {[1,2,3]}', StringifyJson::class)
           ],
           [
               'camel',

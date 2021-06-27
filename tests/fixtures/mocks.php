@@ -34,6 +34,18 @@ $mock_base64_encode_to_param = false;
 $mock_bin2hex_to_param = false;
 $mock_ctype_alpha_to_true = false;
 $mock_random_bytes = false;
+$mock_is_object_to_false = false;
+
+function is_object($val)
+{
+    global $mock_is_object_to_false;
+    if ($mock_is_object_to_false) {
+        return false;
+    }
+
+
+    return \is_object($val);
+}
 
 function base64_encode(string $val)
 {

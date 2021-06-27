@@ -46,6 +46,12 @@ declare(strict_types=1);
 
 namespace Platine\Stdlib\Helper;
 
+use DateTime;
+use DateTimeInterface;
+use JsonSerializable;
+use Throwable;
+use Traversable;
+
 /**
  * Class Str
  * @package Platine\Stdlib\Helper
@@ -709,6 +715,130 @@ class Str
         }
 
         return md5($string . $salt);
+    }
+
+    /**
+     * Convert the given value to string representation
+     * @param mixed $value
+     * @return string
+     */
+    public static function stringify($value): string
+    {
+        if ($value === null) {
+            return 'null';
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+
+        if (is_string($value)) {
+            return sprintf('"%s"', $value);
+        }
+
+        if (is_scalar($value)) {
+            return (string) $value;
+        }
+
+        if (is_array($value)) {
+            return self::stringifyArray($value);
+        }
+
+        if (is_object($value)) {
+            return self::stringifyObject($value);
+        }
+
+        if (is_resource($value)) {
+            return sprintf('resource<%s>', get_resource_type($value));
+        }
+
+        return gettype($value);
+    }
+
+    /**
+     * Convert the given array to string representation
+     * @param array<mixed> $value
+     * @return string
+     */
+    public static function stringifyArray(array $value): string
+    {
+        if (empty($value)) {
+            return '[]';
+        }
+
+        $keys = array_keys($value);
+        $values = array_values($value);
+        [$firstKey] = $keys;
+        $ignoreKeys = $firstKey === 0;
+
+        return sprintf('[%s]', implode(', ', array_map(
+            function ($key, $value) use ($ignoreKeys) {
+                return $ignoreKeys
+                        ? self::stringify($value)
+                        : sprintf(
+                            '%s => %s',
+                            self::stringify($key),
+                            self::stringify($value)
+                        );
+            },
+            $keys,
+            $values
+        )));
+    }
+
+    /**
+     * Convert the given object to string representation
+     * @param object $value
+     * @return string
+     */
+    public static function stringifyObject(object $value): string
+    {
+        $valueClass = get_class($value);
+
+        if ($value instanceof Throwable) {
+            return sprintf(
+                '%s { "%s", %s, %s #%s }',
+                $valueClass,
+                $value->getMessage(),
+                $value->getCode(),
+                $value->getFile(),
+                $value->getLine()
+            );
+        }
+
+        if (method_exists($value, '__toString')) {
+            return sprintf('%s { %s }', $valueClass, $value->__toString());
+        }
+
+        if (method_exists($value, 'toString')) {
+            return sprintf('%s { %s }', $valueClass, $value->toString());
+        }
+
+        if ($value instanceof Traversable) {
+            return sprintf(
+                '%s %s',
+                $valueClass,
+                self::stringifyArray(iterator_to_array($value))
+            );
+        }
+
+        if ($value instanceof DateTimeInterface) {
+            return sprintf(
+                '%s { %s }',
+                $valueClass,
+                $value->format(DateTime::ATOM)
+            );
+        }
+
+        if ($value instanceof JsonSerializable) {
+            return sprintf(
+                '%s {%s}',
+                $valueClass,
+                trim((string) json_encode($value->jsonSerialize()), '{}')
+            );
+        }
+
+        return $valueClass;
     }
 
     /**
