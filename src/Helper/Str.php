@@ -733,7 +733,7 @@ class Str
         }
 
         if (is_string($value)) {
-            return sprintf('"%s"', $value);
+            return $value;
         }
 
         if (is_scalar($value)) {

@@ -134,7 +134,7 @@ class StrTest extends PlatineTestCase
               'stringify',
               ['foo'],
               [],
-              '"foo"'
+              'foo'
           ],
           [
               'stringify',
@@ -164,13 +164,13 @@ class StrTest extends PlatineTestCase
               'stringify',
               [[1, 3, 4, 'name' => 'foo']],
               [],
-              '[1, 3, 4, "foo"]'
+              '[1, 3, 4, foo]'
           ],
           [
               'stringify',
               [['foo' => 34, 1, 3, 4]],
               [],
-              '["foo" => 34, 0 => 1, 1 => 3, 2 => 4]'
+              '[foo => 34, 0 => 1, 1 => 3, 2 => 4]'
           ],
           [
               'stringify',
