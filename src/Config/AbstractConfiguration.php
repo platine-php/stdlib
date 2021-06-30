@@ -70,7 +70,8 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function __construct(array $config = [])
     {
-        $this->load($config);
+        $configuration = array_merge($this->getDefault(), $config);
+        $this->load($configuration);
     }
 
     /**
@@ -138,6 +139,14 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      * {@inheritedoc}
      */
     public function getSetterMaps(): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritedoc}
+     */
+    public function getDefault(): array
     {
         return [];
     }

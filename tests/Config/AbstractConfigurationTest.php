@@ -25,6 +25,8 @@ class AbstractConfigurationTest extends PlatineTestCase
     {
         $cfg = new MyTestAppConfiguration([]);
         $this->assertInstanceOf(AbstractConfiguration::class, $cfg);
+        //Default value
+        $this->assertEquals(100, $cfg->get('a_int'));
     }
 
     public function testConstructorWithConfig(): void
@@ -48,7 +50,7 @@ class AbstractConfigurationTest extends PlatineTestCase
 
         ]);
         $this->expectException(InvalidArgumentException::class);
-        $cfg->get('a_int');
+        $cfg->get('not_found');
     }
 
     public function testSetConfigInvalidValueScalar(): void

@@ -105,6 +105,13 @@ class MyTestAppConfiguration extends AbstractConfiguration
         ];
     }
 
+    public function getDefault(): array
+    {
+        return [
+           'a_int' => 100
+        ];
+    }
+
     public function setArray(array $val): self
     {
         $this->dArr = $val;

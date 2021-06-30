@@ -96,4 +96,12 @@ interface ConfigurationInterface
      * @return array<string, string>
      */
     public function getSetterMaps(): array;
+
+    /**
+     * Return the configuration default values
+     * with format of:
+     * - config name => value
+     * @return array<string, mixed>
+     */
+    public function getDefault(): array;
 }
