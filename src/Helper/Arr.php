@@ -59,7 +59,6 @@ use Traversable;
  */
 class Arr
 {
-
     /**
      * Convert an array, object or string to array
      * @param array<mixed>|object|string $object

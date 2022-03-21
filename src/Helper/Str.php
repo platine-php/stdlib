@@ -58,7 +58,6 @@ use Traversable;
  */
 class Str
 {
-
     /**
      * The cache of snake-cased words.
      *
@@ -839,6 +838,45 @@ class Str
         }
 
         return $valueClass;
+    }
+
+    /**
+     * Return the user ip address
+     * @return string
+     */
+    public static function ip(): string
+    {
+        $ip = '127.0.0.1';
+
+        $ipServerVars = [
+            'REMOTE_ADDR',
+            'HTTP_CLIENT_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED'
+        ];
+
+        foreach ($ipServerVars as $var) {
+            //https://bugs.php.net/bug.php?id=49184 can
+            // not use filter_input(INPUT_SERVER, $var);
+
+            if (isset($_SERVER[$var])) {
+                $ip = htmlspecialchars(
+                    strip_tags((string) $_SERVER[$var]),
+                    ENT_COMPAT,
+                    'UTF-8'
+                );
+                break;
+            }
+        }
+
+        // Strip any secondary IP etc from the IP address
+        if (strpos($ip, ',') > 0) {
+            $ip = substr($ip, 0, strpos($ip, ','));
+        }
+
+        return $ip;
     }
 
     /**

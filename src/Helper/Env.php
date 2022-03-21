@@ -52,7 +52,6 @@ namespace Platine\Stdlib\Helper;
  */
 class Env
 {
-
     /**
      * Whether the application is running on CLI
      * @return bool

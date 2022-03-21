@@ -58,7 +58,6 @@ use Platine\Stdlib\Helper\Str;
  */
 abstract class AbstractConfiguration implements ConfigurationInterface
 {
-
     /**
      * The raw configuration array
      * @var array<string, mixed>

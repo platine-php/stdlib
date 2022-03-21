@@ -54,7 +54,6 @@ use Throwable;
  */
 class Php
 {
-
     /**
      * Call by callback
      * @param callable|array<mixed> $callback

@@ -52,7 +52,6 @@ namespace Platine\Stdlib\Contract;
  */
 interface Jsonable
 {
-
     /**
      * Convert the instance to JSON string
      * @param int $options

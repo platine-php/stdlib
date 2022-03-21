@@ -52,7 +52,6 @@ namespace Platine\Stdlib\Helper;
  */
 class Unit
 {
-
     /**
      * Convert the size like 4G, 7T, 19B to byte
      * @param string $size

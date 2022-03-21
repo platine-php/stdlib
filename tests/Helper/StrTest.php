@@ -22,6 +22,28 @@ use stdClass;
  */
 class StrTest extends PlatineTestCase
 {
+    public function testDefaultIP(): void
+    {
+        $ip = Str::ip();
+        $this->assertEquals('127.0.0.1', $ip);
+    }
+
+    public function testSuccess(): void
+    {
+        $_SERVER['REMOTE_ADDR'] = '192.168.1.1';
+
+        $ip = Str::ip();
+        $this->assertEquals('192.168.1.1', $ip);
+    }
+
+    public function testManyIpAddresses(): void
+    {
+        $_SERVER['REMOTE_ADDR'] = '172.18.0.1,192.168.1.1';
+
+        $ip = Str::ip();
+        $this->assertEquals('172.18.0.1', $ip);
+    }
+
     /**
      * @dataProvider commonDataProvider
      * @param string $method method to call
@@ -94,7 +116,7 @@ class StrTest extends PlatineTestCase
         $ex = new Exception('My exception');
         $str = Str::stringify($ex);
         $this->assertEquals(
-            'Exception { "My exception", 0, ' . __FILE__ . ' #94 }',
+            'Exception { "My exception", 0, ' . __FILE__ . ' #116 }',
             $str
         );
     }

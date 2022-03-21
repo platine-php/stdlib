@@ -55,7 +55,6 @@ use RuntimeException;
  */
 class Composer
 {
-
     /**
      * The composer class loader instance
      * @var ClassLoader|null

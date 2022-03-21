@@ -19,8 +19,6 @@ use stdClass;
  */
 class AbstractConfigurationTest extends PlatineTestCase
 {
-
-
     public function testConstructorDefault(): void
     {
         $cfg = new MyTestAppConfiguration([]);
@@ -72,7 +70,6 @@ class AbstractConfigurationTest extends PlatineTestCase
     public function testGetter(): void
     {
         $cfg = new class extends AbstractConfiguration{
-
         };
 
         $this->assertEmpty($cfg->getSetterMaps());

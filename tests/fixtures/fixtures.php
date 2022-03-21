@@ -42,7 +42,6 @@ class StringifytoString
 
 class StringifyJson implements JsonSerializable
 {
-
     public function jsonSerialize()
     {
         return [1, 2, 3];

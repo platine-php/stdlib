@@ -54,7 +54,6 @@ use InvalidArgumentException;
  */
 class Json
 {
-
     /**
      * Decode JSON string
      * @param string $json

@@ -52,7 +52,6 @@ namespace Platine\Stdlib\Helper;
  */
 class Xml
 {
-
     /**
      * Transform an XML string to array
      * @param string $xml

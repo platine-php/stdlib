@@ -52,7 +52,6 @@ namespace Platine\Stdlib\Contract;
  */
 interface ConfigurationInterface
 {
-
     /**
      * Create new instance
      * @param array<string, mixed> $config

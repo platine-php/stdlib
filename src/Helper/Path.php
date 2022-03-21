@@ -54,7 +54,6 @@ use InvalidArgumentException;
  */
 class Path
 {
-
     /**
      * normalize the path by replace the "\" to "/"
      * @param string $path

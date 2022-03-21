@@ -52,7 +52,6 @@ namespace Platine\Stdlib\Contract;
  */
 interface Arrayable
 {
-
     /**
      * Convert the instance to array
      * @return array<mixed>

@@ -832,7 +832,6 @@ class ArrTest extends PlatineTestCase
     private function getTestArrayAccess(): ArrayAccess
     {
         $aa =  new class implements ArrayAccess{
-
             private $arr = [1, 4, 5];
 
             public function offsetExists($offset): bool
@@ -862,7 +861,6 @@ class ArrTest extends PlatineTestCase
     private function getArrayableObject()
     {
         $cls = new class implements Arrayable{
-
             public function toArray(): array
             {
                 return [1,2,3];
@@ -875,7 +873,6 @@ class ArrTest extends PlatineTestCase
     private function getTestObjectToString()
     {
         $cls = new class {
-
             public function __toString(): string
             {
                 return 'toString';
