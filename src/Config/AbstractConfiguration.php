@@ -99,6 +99,19 @@ abstract class AbstractConfiguration implements ConfigurationInterface
             $this->checkType($name, $type, $value);
         }
         Arr::set($this->config, $name, $value);
+        $setters = $this->getSetterMaps();
+        $key = Str::camel($name, true);
+        if (Arr::has($setters, $key)) {
+            $method = Arr::get($setters, $key);
+            $this->{$method}($value);
+        } else {
+            $setterMethod = 'set' . ucfirst($key);
+            if (method_exists($this, $setterMethod)) {
+                $this->{$setterMethod}($value);
+            } else {
+                $this->{$key} = $value;
+            }
+        }
     }
 
     /**
@@ -118,24 +131,8 @@ abstract class AbstractConfiguration implements ConfigurationInterface
         $rules = $this->getValidationRules();
         $setters = $this->getSetterMaps();
 
-        foreach ($rules as $name => $type) {
-            $this->checkType($name, $type);
-        }
-
         foreach ($config as $name => $value) {
-            $key = Str::camel($name, true);
-
-            if (Arr::has($setters, $key)) {
-                $method = Arr::get($setters, $key);
-                $this->{$method}($value);
-            } else {
-                $setterMethod = 'set' . ucfirst($key);
-                if (method_exists($this, $setterMethod)) {
-                    $this->{$setterMethod}($value);
-                } else {
-                    $this->{$key} = $value;
-                }
-            }
+            $this->set($name, $value);
         }
     }
 
