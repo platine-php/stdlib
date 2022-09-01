@@ -66,6 +66,14 @@ interface ConfigurationInterface
     public function get(string $name);
 
     /**
+     * Set the value of the given configuration
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
+    public function set(string $name, $value): void;
+
+    /**
      * Check whether the given configuration exists
      * @param string $name
      * @return bool

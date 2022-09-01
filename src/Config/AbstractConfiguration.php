@@ -91,6 +91,19 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     /**
      * {@inheritedoc}
      */
+    public function set(string $name, $value): void
+    {
+        $rules = $this->getValidationRules();
+        if (array_key_exists($name, $rules)) {
+            $type = $rules[$name];
+            $this->checkType($name, $type, $value);
+        }
+        Arr::set($this->config, $name, $value);
+    }
+
+    /**
+     * {@inheritedoc}
+     */
     public function has(string $name): bool
     {
         return Arr::has($this->config, $name);
@@ -155,15 +168,18 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      * @param string $key the configuration
      *  key to be checked can be dot notation
      * @param string $type
+     * @param null|mixed $value
      * @return void
      */
-    private function checkType(string $key, string $type): void
+    private function checkType(string $key, string $type, $value = null): void
     {
-        if (!Arr::has($this->config, $key)) {
+        if (!Arr::has($this->config, $key) && $value === null) {
             return;
         }
 
-        $value = Arr::get($this->config, $key, null);
+        if ($value === null) {
+            $value = Arr::get($this->config, $key, null);
+        }
 
         $valueType = gettype($value);
         $className = null;

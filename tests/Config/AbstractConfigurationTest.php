@@ -67,6 +67,24 @@ class AbstractConfigurationTest extends PlatineTestCase
         ]);
     }
 
+    public function testSetConfigInvalidType(): void
+    {
+        $this->expectException(Error::class);
+        $cfg = new MyTestAppConfiguration([
+
+        ]);
+        $cfg->set('c_obj', 123);
+    }
+
+    public function testSetConfig(): void
+    {
+        $cfg = new MyTestAppConfiguration([
+
+        ]);
+        $cfg->set('a_int', 123);
+        $this->assertEquals(123, $cfg->get('a_int'));
+    }
+
     public function testGetter(): void
     {
         $cfg = new class extends AbstractConfiguration{
