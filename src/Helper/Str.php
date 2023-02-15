@@ -606,6 +606,39 @@ class Str
     }
 
     /**
+     * Put array to HTML attributes
+     * @param array<string, mixed> $attributes
+     * @return string
+     */
+    public static function toAttribute(array $attributes): string
+    {
+        if (empty($attributes)) {
+            return '';
+        }
+
+        // handle boolean, array, & html special chars
+        array_walk($attributes, function (&$value, $key) {
+            $value = is_bool($value) ? $value ? 'true' : 'false' : $value;
+            $value = is_array($value) ? implode(' ', $value) : $value;
+            $value = trim($value);
+            $value = htmlspecialchars($value);
+        });
+
+        // remove empty elements
+        $emptyAttributes = array_filter($attributes, function ($value) {
+            return strlen($value) > 0;
+        });
+
+        if (empty($emptyAttributes)) {
+            return '';
+        }
+
+        $compiled = implode('="%s" ', array_keys($emptyAttributes)) . '="%s"';
+
+        return vsprintf($compiled, array_values($emptyAttributes));
+    }
+
+    /**
      * Generate random string value
      * @param int $length
      * @return string
