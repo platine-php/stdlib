@@ -192,7 +192,9 @@ class Arr
             }
         }
 
-        if (is_object($object) && property_exists($object, $key)) {
+        // Note: property_exists not detected property with magic
+        // Method so add isset for this purpose
+        if (is_object($object) && (property_exists($object, $key) || isset($object->{$key}))) {
             // this is will fail if the property does not exist,
             //  or __get() is not implemented
             // it is not reliably possible to check whether a property
