@@ -107,7 +107,9 @@ class Xml
         $xml = '';
         if (!empty($data)) {
             foreach ($data as $key => $value) {
-                $xml .= '<' . $key . '>';
+                if (is_int($key) === false) {
+                    $xml .= '<' . $key . '>';
+                }
                 if (is_iterable($value)) {
                     /** @var array<string, mixed|iterable> $value */
                     $xml .= self::arrayToXml($value);
@@ -116,7 +118,9 @@ class Xml
                 } else {
                     $xml .= self::addCharacterData($value);
                 }
-                $xml .= '</' . $key . '>';
+                if (is_int($key) === false) {
+                    $xml .= '</' . $key . '>';
+                }
             }
         }
 

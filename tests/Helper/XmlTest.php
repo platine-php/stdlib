@@ -62,6 +62,12 @@ class XmlTest extends PlatineTestCase
               [],
               '<xml><id>1</id><name><![CDATA[foo]]></name></xml>'
           ],
+           [
+              'encode',
+              [[['data' => ['id' => 1, 'name' => 'foo']], ['data' => ['id' => 2, 'name' => 'bar']]]],
+              [],
+              '<xml><data><id>1</id><name><![CDATA[foo]]></name></data><data><id>2</id><name><![CDATA[bar]]></name></data></xml>'
+          ],
           [
               'encode',
               [new ArrayIterator(['id' => 1, 'name' => 'foo'])],
