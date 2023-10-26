@@ -134,6 +134,10 @@ class Xml
      */
     protected static function addCharacterData(string $value): string
     {
+        if (empty($value)) {
+            return $value;
+        }
+
         return sprintf('<![CDATA[%s]]>', $value);
     }
 }
