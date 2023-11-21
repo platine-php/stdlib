@@ -120,9 +120,9 @@ class PhpTest extends PlatineTestCase
 string(3) "foo"
 bool(true)
 array(3) {
-  [0] => int(1)
-  [1] => int(2)
-  [2] => int(3)
+  [0]=> int(1)
+  [1]=> int(2)
+  [2]=> int(3)
 }
 '
           ],
