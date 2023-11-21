@@ -87,7 +87,7 @@ class Str
     public static function toAscii(string $value): string
     {
         foreach (self::getChars() as $key => $val) {
-            $value = str_replace($val, $key, $value);
+            $value = str_replace($val, (string) $key, $value);
         }
 
         return (string)preg_replace('/[^\x20-\x7E]/u', '', $value);
