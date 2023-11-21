@@ -76,6 +76,24 @@ class AbstractConfigurationTest extends PlatineTestCase
         $cfg->set('c_obj', 123);
     }
 
+    public function testSetConfigKeyNotFound(): void
+    {
+        $cfg = new MyTestAppConfiguration([
+
+        ]);
+        $cfg->set('not_found_key', null);
+        $this->assertNull($cfg->get('not_found_key'));
+    }
+
+    public function testSetConfigNull(): void
+    {
+        $cfg = new MyTestAppConfiguration([
+            'b_bool_null' => true
+        ]);
+        $cfg->set('b_bool_null', null);
+        $this->assertNull($cfg->get('b_bool_null'));
+    }
+
     public function testSetConfig(): void
     {
         $cfg = new MyTestAppConfiguration([

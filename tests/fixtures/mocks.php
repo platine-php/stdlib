@@ -35,6 +35,18 @@ $mock_bin2hex_to_param = false;
 $mock_ctype_alpha_to_true = false;
 $mock_random_bytes = false;
 $mock_is_object_to_false = false;
+$mock_mt_rand_to_zero = false;
+
+function mt_rand(int $min, int $max): int
+{
+    global $mock_mt_rand_to_zero;
+    if ($mock_mt_rand_to_zero) {
+        return 0;
+    }
+
+
+    return \mt_rand($min, $max);
+}
 
 function is_object($val)
 {

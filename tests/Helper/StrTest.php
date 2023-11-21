@@ -134,6 +134,18 @@ class StrTest extends PlatineTestCase
               [],
               'a="true" b="c"'
           ],
+           [
+              'toAttribute',
+              [['']],
+              [],
+              ''
+          ],
+          [
+              'toAttribute',
+              [[]],
+              [],
+              ''
+          ],
           [
               'toAttribute',
               [['a' => true, 'b' => ['class-1', 'class-2']]],

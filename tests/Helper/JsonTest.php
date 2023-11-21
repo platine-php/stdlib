@@ -42,8 +42,8 @@ class JsonTest extends PlatineTestCase
 
         $this->assertIsObject($res);
         $this->assertInstanceOf(stdClass::class, $res);
-        $this->assertObjectHasAttribute('a', $res);
-        $this->assertObjectHasAttribute('b', $res);
+        $this->assertObjectHasProperty('a', $res);
+        $this->assertObjectHasProperty('b', $res);
         $this->assertEquals(4, $res->b);
         $this->assertEquals(3, $res->a);
     }

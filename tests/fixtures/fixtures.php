@@ -77,6 +77,7 @@ class MyTestAppConfiguration extends AbstractConfiguration
 {
     protected int $aInt = 0;
     protected bool $bBool = false;
+    protected ?bool $bBoolNull = null;
     protected ?stdClass $cObj = null;
     protected array $dArr = [];
 
@@ -85,10 +86,12 @@ class MyTestAppConfiguration extends AbstractConfiguration
         return [
             'a_int' => 'integer',
             'b_bool' => 'boolean',
+            'b_bool_null' => 'boolean',
             'c_obj' => 'object::' . (stdClass::class),
             'd_arr' => 'array',
             'd_arr.foo.bar' => 'integer',
             'd_arr.state' => 'boolean',
+            'not_found_key' => 'boolean',
         ];
     }
 
