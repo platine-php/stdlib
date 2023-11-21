@@ -114,15 +114,15 @@ class PhpTest extends PlatineTestCase
           ],
           [
               'dumpVars',
-              [3, 5.7, true, [1, 2, 3]],
+              [3, 'foo', true, [1, 2, 3]],
               [],
               'int(3)
-float(5.7)
+string(3) "foo"
 bool(true)
 array(3) {
-  [0]=> int(1)
-  [1]=> int(2)
-  [2]=> int(3)
+  [0] => int(1)
+  [1] => int(2)
+  [2] => int(3)
 }
 '
           ],
