@@ -62,7 +62,18 @@ class Path
      */
     public static function normalizePath(string $path, bool $suffix = false): string
     {
-        return str_replace('\\', '/', $path) . ($suffix ? '/' : '');
+        // Fix issue for path that contains wrapper like file://
+        $replace = str_replace('\\', '/', $path) . ($suffix ? '/' : '');
+        $temp = (array) explode('://', $path);
+        if (isset($temp[1])) {
+            $replace = sprintf(
+                '%s://%s',
+                $temp[0],
+                str_replace('\\', '/', $temp[1]) . ($suffix ? '/' : '')
+            );
+        }
+
+        return $replace;
     }
 
     /**
@@ -73,8 +84,20 @@ class Path
      */
     public static function normalizePathDS(string $path, bool $suffix = false): string
     {
-        return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path)
+        // Fix issue for path that contains wrapper like file://
+        $replace = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path)
                 . ($suffix ? DIRECTORY_SEPARATOR : '');
+        $temp = (array) explode('://', $path);
+        if (isset($temp[1])) {
+            $replace = sprintf(
+                '%s://%s',
+                $temp[0],
+                str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $temp[1])
+                . ($suffix ? DIRECTORY_SEPARATOR : '')
+            );
+        }
+
+        return $replace;
     }
 
     /**

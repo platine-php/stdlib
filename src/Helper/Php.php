@@ -101,21 +101,6 @@ class Php
     }
 
     /**
-     * Dump variables
-     * @param mixed ...$vars
-     * @return string
-     */
-    public static function dumpVars(...$vars): string
-    {
-        ob_start();
-        var_dump(...$vars);
-
-        $string = (string) ob_get_clean();
-
-        return (string) preg_replace("/=>\n\s+/", '=> ', $string);
-    }
-
-    /**
      * Print variables
      * @param mixed ...$vars
      * @return string

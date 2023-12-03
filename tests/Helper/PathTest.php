@@ -73,6 +73,12 @@ class PathTest extends PlatineTestCase
           ],
           [
               'normalizePath',
+              ['tony://foo\bar', true],
+              [],
+              'tony://foo/bar/'
+          ],
+          [
+              'normalizePath',
               ['foo\bar', true],
               [],
               'foo/bar/'
@@ -88,6 +94,12 @@ class PathTest extends PlatineTestCase
               ['foo\bar', false],
               [],
               sprintf('foo%sbar', DIRECTORY_SEPARATOR)
+          ],
+          [
+              'normalizePathDS',
+              ['tony://foo\bar', false],
+              [],
+              sprintf('tony://foo%sbar', DIRECTORY_SEPARATOR)
           ],
           [
               'normalizePathDS',

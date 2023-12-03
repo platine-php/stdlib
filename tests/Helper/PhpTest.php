@@ -61,6 +61,18 @@ class PhpTest extends PlatineTestCase
         $this->assertEquals(sprintf('at %s line %d', __FILE__, $execptionLine), $res['file']);
     }
 
+    public function testPrint(): void
+    {
+        $expected = 'Array
+(
+    [0] => 1
+    [1] => 2
+    [2] => 3
+)
+' . PHP_EOL;
+        $this->assertEquals($expected, Php::printVars(...[[1, 2, 3]]));
+    }
+
     /**
      * Data provider for "testCommonMethods"
      * @return array
@@ -111,36 +123,6 @@ class PhpTest extends PlatineTestCase
               [[phpCallClassCommon::class, 'bar'], ['bar']],
               [],
               'foobar'
-          ],
-          [
-              'dumpVars',
-              [3, 'foo', true, [1, 2, 3]],
-              [],
-              'int(3)
-string(3) "foo"
-bool(true)
-array(3) {
-  [0]=> int(1)
-  [1]=> int(2)
-  [2]=> int(3)
-}
-'
-          ],
-          [
-              'printVars',
-              [3, 5.7, true, [1, 2, 3]],
-              [],
-              '3
-5.7
-1
-Array
-(
-    [0] => 1
-    [1] => 2
-    [2] => 3
-)
-
-'
           ],
           [
               'exportVar',
