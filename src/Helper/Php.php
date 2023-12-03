@@ -101,37 +101,6 @@ class Php
     }
 
     /**
-     * Print variables
-     * @param mixed ...$vars
-     * @return string
-     */
-    public static function printVars(...$vars): string
-    {
-        $string = '';
-        foreach ($vars as $var) {
-            $string .= print_r($var, true) . PHP_EOL;
-        }
-
-        return (string) preg_replace("/Array\n\s+\(/", 'Array (', $string);
-    }
-
-    /**
-     * Export variable
-     * @param mixed $var
-     * @return string
-     */
-    public static function exportVar($var): string
-    {
-        $string = var_export($var, true);
-
-        return (string) preg_replace(
-            '/=>\s+\n\s+array \(/',
-            '=> array (',
-            $string
-        );
-    }
-
-    /**
      * Convert an Exception to string
      * @param Throwable $err
      * @param string $title
