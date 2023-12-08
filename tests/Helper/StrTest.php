@@ -260,6 +260,24 @@ class StrTest extends PlatineTestCase
               [],
               'aBC'
           ],
+           [
+              'camel',
+              ['A_b_c', true],
+              [],
+              'aBC'
+          ],
+          [
+              'camel',
+              ['A_D_c', false],
+              [],
+              'ADC'
+          ],
+          [
+              'camel',
+              ['username', false],
+              [],
+              'Username'
+          ],
           [
               'toArray',
               ['a_bv_c', '_'],
