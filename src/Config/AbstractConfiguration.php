@@ -128,8 +128,6 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     public function load(array $config): void
     {
         $this->config = $config;
-        $rules = $this->getValidationRules();
-        $setters = $this->getSetterMaps();
 
         foreach ($config as $name => $value) {
             $this->set($name, $value);
