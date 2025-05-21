@@ -49,11 +49,12 @@ namespace Platine\Stdlib\Helper;
 use DateTime;
 use DateTimeInterface;
 use JsonSerializable;
+use Stringable;
 use Throwable;
 use Traversable;
 
 /**
- * Class Str
+ * @class Str
  * @package Platine\Stdlib\Helper
  */
 class Str
@@ -93,6 +94,64 @@ class Str
         return (string)preg_replace('/[^\x20-\x7E]/u', '', $value);
     }
 
+     /**
+     * This function is used to hidden some part of the given string. Helpful
+     * if you need hide some confidential information
+     * like credit card number, password, etc.
+     *
+     * @param string $str the string you want to hide some part
+     * @param int $startCount the length of non hidden for the beginning char
+     * @param int $endCount the length of non hidden for the ending char
+     * @param string $hiddenChar the char used to hide the given string
+     *
+     * @return string
+     */
+    public static function hidden(
+        string $str,
+        int $startCount = 0,
+        int $endCount = 0,
+        string $hiddenChar = '*'
+    ): string {
+        // get the string length
+        $len = self::length($str);
+        //if string is empty
+        if ($len <= 0) {
+            return self::repeat($hiddenChar, 6);
+        }
+
+        /*
+         * if the length is less than $startCount and $endCount
+         * or the $startCount and $endCount length is 0
+         * or $startCount is negative or $endCount is negative
+         * return the full string as hidden
+         */
+
+        if (
+            (($startCount + $endCount) > $len) ||
+            ($startCount == 0 && $endCount == 0) ||
+            ($startCount < 0 || $endCount < 0)
+        ) {
+            return self::repeat($hiddenChar, $len);
+        }
+
+        // the start non hidden string
+        $startNonHiddenStr = substr($str, 0, $startCount);
+        // the end non hidden string
+        $endNonHiddenStr = '';
+        if ($endCount > 0) {
+            $endNonHiddenStr = substr($str, - $endCount);
+        }
+        // the hidden string
+        $hiddenStr = self::repeat($hiddenChar, $len - ($startCount + $endCount));
+
+        return sprintf(
+            '%s%s%s',
+            $startNonHiddenStr,
+            $hiddenStr,
+            $endNonHiddenStr
+        );
+    }
+
     /**
      * Convert to camel case
      * @param string $value
@@ -116,8 +175,11 @@ class Str
      * @param int $limit
      * @return array<string>
      */
-    public static function toArray(string $value, string $delimiter = ', ', int $limit = 0): array
-    {
+    public static function toArray(
+        string $value,
+        string $delimiter = ', ',
+        int $limit = 0
+    ): array {
         $string = trim($value, $delimiter . ' ');
         if ($string === '') {
             return [];
@@ -145,7 +207,7 @@ class Str
      * @param string|array<mixed> $needles
      * @return bool
      */
-    public static function contains(string $value, $needles): bool
+    public static function contains(string $value, string|array $needles): bool
     {
         if (!is_array($needles)) {
             $needles = [$needles];
@@ -166,7 +228,7 @@ class Str
      * @param string|array<mixed> $needles
      * @return bool
      */
-    public static function endsWith(string $value, $needles): bool
+    public static function endsWith(string $value, string|array $needles): bool
     {
         if (!is_array($needles)) {
             $needles = [$needles];
@@ -187,7 +249,7 @@ class Str
      * @param string|array<mixed> $needles
      * @return bool
      */
-    public static function startsWith(string $value, $needles): bool
+    public static function startsWith(string $value, string|array $needles): bool
     {
         if (!is_array($needles)) {
             $needles = [$needles];
@@ -218,7 +280,7 @@ class Str
         if (strpos($str, "\n") > 0) {
             $parts = explode("\n", $str);
 
-            return $parts[0] ?? '';
+            return $parts[0];
         }
 
         return $str;
@@ -266,7 +328,7 @@ class Str
      * @param string $encode
      * @return int
      */
-    public static function length($value, string $encode = 'UTF-8'): int
+    public static function length(string|int $value, string $encode = 'UTF-8'): int
     {
         if (!is_string($value)) {
             $value = (string) $value;
@@ -274,7 +336,7 @@ class Str
 
         $length = mb_strlen($value, $encode);
 
-        return $length !== false ? $length : -1;
+        return $length;
     }
 
 
@@ -287,7 +349,7 @@ class Str
      * @return string
      */
     public static function pad(
-        $value,
+        string|int $value,
         int $length,
         string $padStr = ' ',
         int $type = STR_PAD_BOTH
@@ -309,7 +371,7 @@ class Str
      * @return string
      */
     public static function padLeft(
-        $value,
+        string|int $value,
         int $length,
         string $padStr = ' '
     ): string {
@@ -324,7 +386,7 @@ class Str
      * @return string
      */
     public static function padRight(
-        $value,
+        string|int $value,
         int $length,
         string $padStr = ' '
     ): string {
@@ -337,7 +399,7 @@ class Str
      * @param int $length
      * @return string
      */
-    public static function repeat($value, int $length = 1): string
+    public static function repeat(string|int $value, int $length = 1): string
     {
         if (!is_string($value)) {
             $value = (string) $value;
@@ -612,7 +674,7 @@ class Str
      */
     public static function toAttribute(array $attributes): string
     {
-        if (empty($attributes)) {
+        if (count($attributes) === 0) {
             return '';
         }
 
@@ -754,7 +816,7 @@ class Str
      * @param mixed $value
      * @return string
      */
-    public static function stringify($value): string
+    public static function stringify(mixed $value): string
     {
         if ($value === null) {
             return 'null';
@@ -838,7 +900,7 @@ class Str
             );
         }
 
-        if (method_exists($value, '__toString')) {
+        if ($value instanceof Stringable) {
             return sprintf('%s { %s }', $valueClass, $value->__toString());
         }
 

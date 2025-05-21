@@ -50,7 +50,7 @@ use Composer\Autoload\ClassLoader;
 use RuntimeException;
 
 /**
- * Class Composer
+ * @class Composer
  * @package Platine\Stdlib\Helper
  */
 class Composer
@@ -69,7 +69,7 @@ class Composer
      */
     public static function getClasstLoader(): ClassLoader
     {
-        if (self::$classLoader) {
+        if (self::$classLoader !== null) {
             return self::$classLoader;
         }
 
@@ -103,7 +103,7 @@ class Composer
     {
         $filename = Path::normalizePathDS($path, true) . 'composer.lock';
 
-        if (!file_exists($filename)) {
+        if (file_exists($filename) === false) {
             throw new RuntimeException(sprintf(
                 'Composer lock file [%s] does not exists',
                 $filename
@@ -113,13 +113,13 @@ class Composer
 
         $json = file_get_contents($filename);
 
-        if (!$json) {
+        if ($json === false) {
             return [];
         }
 
         /** @var array<mixed> $data */
         $data = json_decode($json, true);
-        if (empty($data) || !isset($data['packages'])) {
+        if (count($data) === 0 || !isset($data['packages'])) {
             return [];
         }
 

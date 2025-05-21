@@ -47,7 +47,7 @@ declare(strict_types=1);
 namespace Platine\Stdlib\Contract;
 
 /**
- * Class Arrayable
+ * @class Arrayable
  * @package Platine\Stdlib\Contract
  */
 interface Arrayable

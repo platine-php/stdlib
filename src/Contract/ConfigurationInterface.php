@@ -47,7 +47,7 @@ declare(strict_types=1);
 namespace Platine\Stdlib\Contract;
 
 /**
- * Class ConfigurationInterface
+ * @class ConfigurationInterface
  * @package Platine\Stdlib\Contract
  */
 interface ConfigurationInterface
@@ -63,7 +63,7 @@ interface ConfigurationInterface
      * @param string $name
      * @return mixed
      */
-    public function get(string $name);
+    public function get(string $name): mixed;
 
     /**
      * Set the value of the given configuration
@@ -71,7 +71,7 @@ interface ConfigurationInterface
      * @param mixed $value
      * @return void
      */
-    public function set(string $name, $value): void;
+    public function set(string $name, mixed $value): void;
 
     /**
      * Check whether the given configuration exists

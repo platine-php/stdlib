@@ -47,7 +47,7 @@ declare(strict_types=1);
 namespace Platine\Stdlib\Helper;
 
 /**
- * Class Env
+ * @class Env
  * @package Platine\Stdlib\Helper
  */
 class Env

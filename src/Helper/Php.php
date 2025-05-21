@@ -49,7 +49,7 @@ namespace Platine\Stdlib\Helper;
 use Throwable;
 
 /**
- * Class Php
+ * @class Php
  * @package Platine\Stdlib\Helper
  */
 class Php
@@ -61,7 +61,7 @@ class Php
      *
      * @return mixed
      */
-    public static function call($callback, ...$args)
+    public static function call(callable|array $callback, mixed ...$args): mixed
     {
         if (is_string($callback)) {
             // className::method
@@ -95,7 +95,7 @@ class Php
      *
      * @return mixed
      */
-    public static function callArray($callback, array $args)
+    public static function callArray(callable|array $callback, array $args): mixed
     {
         return self::call($callback, ...$args);
     }
@@ -113,7 +113,7 @@ class Php
         bool $debug = false
     ): string {
         $className = get_class($err);
-        if (!$debug) {
+        if ($debug === false) {
             return sprintf(
                 '%s %s(code:%d) %s',
                 $title,
@@ -144,7 +144,7 @@ class Php
         Throwable $err,
         bool $debug = false
     ): array {
-        if (!$debug) {
+        if ($debug === false) {
             return [
                 'code' => $err->getCode(),
                 'error' => $err->getMessage()
@@ -152,10 +152,10 @@ class Php
         }
 
         return [
-                'code' => $err->getCode(),
-                'error' => sprintf('(%s) %s', get_class($err), $err->getMessage()),
-                'file' => sprintf('at %s line %d', $err->getFile(), $err->getLine()),
-                'trace' => $err->getTraceAsString(),
-            ];
+            'code' => $err->getCode(),
+            'error' => sprintf('(%s) %s', get_class($err), $err->getMessage()),
+            'file' => sprintf('at %s line %d', $err->getFile(), $err->getLine()),
+            'trace' => $err->getTraceAsString(),
+        ];
     }
 }

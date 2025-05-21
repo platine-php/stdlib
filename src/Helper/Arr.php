@@ -50,11 +50,12 @@ use ArrayAccess;
 use Closure;
 use InvalidArgumentException;
 use Platine\Stdlib\Contract\Arrayable;
+use Stringable;
 use Traversable;
 
 
 /**
- * Class Arr
+ * @class Arr
  * @package Platine\Stdlib\Helper
  */
 class Arr
@@ -67,7 +68,7 @@ class Arr
      * @return array<mixed>
      */
     public static function toArray(
-        $object,
+        array|object|string $object,
         array $properties = [],
         bool $recursive = true
     ): array {
@@ -84,9 +85,9 @@ class Arr
         }
 
         if (is_object($object)) {
-            if (!empty($properties)) {
+            if (count($properties) > 0) {
                 $className = get_class($object);
-                if (!empty($properties[$className])) {
+                if (count($properties[$className]) > 0) {
                     $result = [];
                     foreach ($properties[$className] as $key => $name) {
                         if (is_int($key)) {
@@ -127,7 +128,7 @@ class Arr
     public static function merge(array ...$args): array
     {
         $res = (array)array_shift($args);
-        while (!empty($args)) {
+        while (count($args) > 0) {
             $next = array_shift($args);
             foreach ($next as $key => $value) {
                 if (is_int($key)) {
@@ -151,15 +152,18 @@ class Arr
      * Return the value of an array element or object property
      * for the given key or property name.
      *
-     * @param array<mixed>|object $object
+     * @param mixed $object
      * @param int|string|Closure|array<mixed> $key
      * @param mixed $default
      *
      * @return mixed If the key does not exist in the array or object,
      * the default value will be returned instead.
      */
-    public static function getValue($object, $key, $default = null)
-    {
+    public static function getValue(
+        mixed $object,
+        int|string|Closure|array $key,
+        mixed $default = null
+    ): mixed {
         if ($key instanceof Closure) {
             return $key($object, $default);
         }
@@ -221,7 +225,7 @@ class Arr
      *
      * @return mixed|null
      */
-    public static function remove(array &$array, $key, $default = null)
+    public static function remove(array &$array, string|int $key, mixed $default = null): mixed
     {
         if (isset($array[$key]) || array_key_exists($key, $array)) {
             $value = $array[$key];
@@ -240,7 +244,7 @@ class Arr
      * @param array<int, int|string>|string|int $keys
      * @return array<mixed>
      */
-    public static function except(array $array, $keys): array
+    public static function except(array $array, array|string|int $keys): array
     {
         static::forget($array, $keys);
 
@@ -253,7 +257,7 @@ class Arr
      * @param array<int, int|string>|string|int $keys
      * @return void
      */
-    public static function forget(array &$array, $keys): void
+    public static function forget(array &$array, array|string|int $keys): void
     {
         $original = &$array;
 
@@ -297,7 +301,7 @@ class Arr
      * @param mixed $default
      * @return mixed
      */
-    public static function pull(array &$array, $key, $default = null)
+    public static function pull(array &$array, string|int $key, mixed $default = null): mixed
     {
         $value = static::get($array, $key, $default);
 
@@ -322,12 +326,15 @@ class Arr
      * specified then the element is discarded.
      *
      * @param array<mixed> $array
-     * @param string|Closure|null   $key
-     * @param string|string[]|Closure[]|null $groups
+     * @param string|int|Closure|array<mixed>|null $key
+     * @param string|int|string[]|int[]|Closure[]|null $groups
      * @return array<mixed> the indexed and/or grouped array
      */
-    public static function index(array $array, $key = null, $groups = []): array
-    {
+    public static function index(
+        array $array,
+        string|int|Closure|array|null $key = null,
+        string|int|array|null $groups = []
+    ): array {
         $result = [];
         if (!is_array($groups)) {
             $groups = (array) $groups;
@@ -338,14 +345,14 @@ class Arr
             foreach ($groups as $group) {
                 /** @var int|string $value */
                 $value = static::getValue($element, $group);
-                if (!empty($lastArray) && !array_key_exists($value, $lastArray)) {
+                if (count($lastArray) > 0 && !array_key_exists($value, $lastArray)) {
                     $lastArray[$value] = [];
                 }
                 $lastArray = &$lastArray[$value];
             }
 
             if ($key === null) {
-                if (!empty($groups)) {
+                if (count($groups) > 0) {
                     $lastArray[] = $element;
                 }
             } else {
@@ -371,8 +378,11 @@ class Arr
      * @param bool $keepKeys
      * @return array<mixed>
      */
-    public static function getColumn(array $array, $name, bool $keepKeys = true): array
-    {
+    public static function getColumn(
+        array $array,
+        int|string|Closure $name,
+        bool $keepKeys = true
+    ): array {
         $result = [];
         if ($keepKeys) {
             foreach ($array as $key => $element) {
@@ -398,11 +408,15 @@ class Arr
      * @param array<mixed> $array
      * @param string|Closure $from
      * @param string|Closure $to
-     * @param string|Closure|null $group
+     * @param string|array<mixed>|Closure|null $group
      * @return array<mixed>
      */
-    public static function map(array $array, $from, $to, $group = null): array
-    {
+    public static function map(
+        array $array,
+        string|Closure $from,
+        string|Closure $to,
+        string|array|Closure|null $group = null
+    ): array {
         $result = [];
         foreach ($array as $element) {
             $key = static::getValue($element, $from);
@@ -460,9 +474,9 @@ class Arr
      */
     public static function multisort(
         array &$array,
-        $key,
-        $direction = SORT_ASC,
-        $sortFlag = SORT_REGULAR
+        string|Closure|array $key,
+        int|array $direction = SORT_ASC,
+        int|array $sortFlag = SORT_REGULAR
     ): void {
         $keys = is_array($key) ? $key : [$key];
 
@@ -591,7 +605,7 @@ class Arr
      * @param bool $strict
      * @return bool
      */
-    public static function isIn($needle, $array, bool $strict = false): bool
+    public static function isIn(mixed $needle, array|Traversable $array, bool $strict = false): bool
     {
         if ($array instanceof Traversable) {
             $array = iterator_to_array($array);
@@ -612,7 +626,7 @@ class Arr
      * @param mixed $var
      * @return bool
      */
-    public static function isTraversable($var): bool
+    public static function isTraversable(mixed $var): bool
     {
         return is_array($var) || $var instanceof Traversable;
     }
@@ -630,8 +644,11 @@ class Arr
      * @param bool $strict
      * @return bool
      */
-    public static function isSubset($needles, $array, bool $strict = false): bool
-    {
+    public static function isSubset(
+        array|Traversable $needles,
+        array|Traversable $array,
+        bool $strict = false
+    ): bool {
         foreach ($needles as $needle) {
             if (!static::isIn($needle, $array, $strict)) {
                 return false;
@@ -705,7 +722,7 @@ class Arr
      * @param mixed $var
      * @return bool
      */
-    public static function isAccessible($var): bool
+    public static function isAccessible(mixed $var): bool
     {
         return is_array($var) || $var instanceof ArrayAccess;
     }
@@ -715,7 +732,7 @@ class Arr
      * @param mixed $var
      * @return bool
      */
-    public static function isArrayable($var): bool
+    public static function isArrayable(mixed $var): bool
     {
         return is_array($var) || $var instanceof Arrayable;
     }
@@ -725,7 +742,7 @@ class Arr
      * @param mixed $var
      * @return array<mixed>
      */
-    public static function wrap($var): array
+    public static function wrap(mixed $var): array
     {
         if ($var === null) {
             return [];
@@ -740,7 +757,7 @@ class Arr
      * @param string|int $key
      * @return bool
      */
-    public static function exists($array, $key): bool
+    public static function exists(array|ArrayAccess $array, string|int $key): bool
     {
         if (is_array($array)) {
             return array_key_exists($key, $array);
@@ -757,8 +774,11 @@ class Arr
      * @param mixed $default
      * @return mixed
      */
-    public static function get($array, $key = null, $default = null)
-    {
+    public static function get(
+        array|ArrayAccess $array,
+        string|int|null $key = null,
+        mixed $default = null
+    ): mixed {
         if ($key === null) {
             return $array;
         }
@@ -790,7 +810,7 @@ class Arr
      * @param string|int $key
      * @return bool
      */
-    public static function has($array, $key): bool
+    public static function has(array|ArrayAccess $array, string|int $key): bool
     {
         if (empty($array)) {
             return false;
@@ -830,7 +850,7 @@ class Arr
      * @param mixed $value
      * @return void
      */
-    public static function set(array &$array, ?string $key, $value): void
+    public static function set(array &$array, ?string $key, mixed $value): void
     {
         if ($key === null) {
             return;
@@ -907,7 +927,7 @@ class Arr
      */
     public static function similar(
         string $need,
-        $array,
+        array|Traversable $array,
         int $percentage = 45
     ): array {
         if (empty($need)) {
@@ -958,10 +978,10 @@ class Arr
     public static function first(
         array $array,
         callable $callable = null,
-        $default = null
-    ) {
+        mixed $default = null
+    ): mixed {
         if ($callable === null) {
-            if (empty($array)) {
+            if (count($array) === 0) {
                 return $default;
             }
 
@@ -990,10 +1010,10 @@ class Arr
     public static function last(
         array $array,
         callable $callable = null,
-        $default = null
-    ) {
+        mixed $default = null
+    ): mixed {
         if ($callable === null) {
-            if (empty($array)) {
+            if (count($array) === 0) {
                 return $default;
             }
 
@@ -1042,8 +1062,11 @@ class Arr
      * @param string|int|null $key
      * @return array<mixed>
      */
-    public static function pluck(array $array, $value, $key = null): array
-    {
+    public static function pluck(
+        array $array,
+        string|int $value,
+        string|int|null $key = null
+    ): array {
         $results = [];
         foreach ($array as $item) {
             if (is_array($item)) {
@@ -1057,7 +1080,7 @@ class Arr
                     $results[] = $itemValue;
                 } else {
                     $itemKey = static::get($item, $key);
-                    if (is_object($itemKey) && method_exists($itemKey, '__toString')) {
+                    if (is_object($itemKey) && $itemKey instanceof Stringable) {
                         $itemKey = (string)$itemKey;
                     }
 
@@ -1117,10 +1140,10 @@ class Arr
      *
      * @param array<int|string, mixed> $array
      * @param mixed $value
-     * @param mixed|null $key
+     * @param mixed $key
      * @return array<mixed>
      */
-    public static function prepend(array $array, $value, $key = null): array
+    public static function prepend(array $array, mixed $value, mixed $key = null): array
     {
         if ($key === null) {
             array_unshift($array, $value);
@@ -1138,7 +1161,7 @@ class Arr
      *
      * @return mixed
      */
-    public static function random(array $array, ?int $number = null)
+    public static function random(array $array, ?int $number = null): mixed
     {
         $requested = $number === null ? 1 : $number;
         $count = count($array);
@@ -1207,7 +1230,6 @@ class Arr
     public static function normalizeArguments(array $args): array
     {
         $normalized = [];
-
         foreach ($args as $arg) {
             if (preg_match('/^\-\w=/', $arg)) {
                 $normalized = array_merge(

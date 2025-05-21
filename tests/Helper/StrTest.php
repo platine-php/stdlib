@@ -129,6 +129,24 @@ class StrTest extends PlatineTestCase
     {
         return [
           [
+              'hidden',
+              [''],
+              [],
+              '******'
+          ],
+          [
+              'hidden',
+              ['password', 10, 4],
+              [],
+              '********'
+          ],
+          [
+              'hidden',
+              ['password', 1, 4],
+              [],
+              'p***word'
+          ],
+          [
               'toAttribute',
               [['a' => true, 'b' => 'c']],
               [],
@@ -460,7 +478,7 @@ class StrTest extends PlatineTestCase
           ],
           [
               'length',
-              [null],
+              [''],
               [],
               0
           ],

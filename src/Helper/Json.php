@@ -49,7 +49,7 @@ namespace Platine\Stdlib\Helper;
 use InvalidArgumentException;
 
 /**
- * Class Json
+ * @class Json
  * @package Platine\Stdlib\Helper
  */
 class Json
@@ -61,14 +61,18 @@ class Json
      * @param int $depth
      * @param int $options
      *
-     * @return array<mixed>|object
+     * @return array<mixed>|object|bool|null
      */
     public static function decode(
         string $json,
         bool $assoc = false,
         int $depth = 512,
         int $options = 0
-    ) {
+    ): array|object|bool|null {
+        if ($depth < 1 || $depth > PHP_INT_MAX) {
+            $depth = 512;
+        }
+
         $data = json_decode($json, $assoc, $depth, $options);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -88,10 +92,14 @@ class Json
      * @return string
      */
     public static function encode(
-        $data,
+        mixed $data,
         int $options = 0,
         int $depth = 512
     ): string {
+        if ($depth < 1 || $depth > PHP_INT_MAX) {
+            $depth = 512;
+        }
+
         $json = json_encode($data, $options, $depth);
 
         if (json_last_error() !== JSON_ERROR_NONE) {

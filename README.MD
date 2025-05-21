@@ -13,7 +13,7 @@
 
 
 ### Requirements 
-- **PHP >= 7.4**, **PHP 8** 
+- **PHP >= 8.0**
 
 ### Installation
 #### Using composer (recommended)

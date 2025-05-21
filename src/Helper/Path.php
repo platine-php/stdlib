@@ -49,7 +49,7 @@ namespace Platine\Stdlib\Helper;
 use InvalidArgumentException;
 
 /**
- * Class Path
+ * @class Path
  * @package Platine\Stdlib\Helper
  */
 class Path
@@ -107,7 +107,7 @@ class Path
      */
     public static function isAbsolutePath(string $path): bool
     {
-        if (!$path) {
+        if (empty($path)) {
             return false;
         }
 

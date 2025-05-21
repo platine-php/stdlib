@@ -26,7 +26,7 @@ class JsonTest extends PlatineTestCase
 
     public function testDecodeArray(): void
     {
-        $res = Json::decode('{"a":3, "b": 4}', true);
+        $res = Json::decode('{"a":3, "b": 4}', true, 0);
 
         $this->assertIsArray($res);
         $this->assertCount(2, $res);
@@ -57,6 +57,6 @@ class JsonTest extends PlatineTestCase
 
     public function testEncodeSuccess(): void
     {
-        $this->assertEquals(Json::encode(['a' => 6, 'b' => 7]), '{"a":6,"b":7}');
+        $this->assertEquals(Json::encode(['a' => 6, 'b' => 7], 0, 0), '{"a":6,"b":7}');
     }
 }

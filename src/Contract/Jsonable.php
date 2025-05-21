@@ -47,7 +47,7 @@ declare(strict_types=1);
 namespace Platine\Stdlib\Contract;
 
 /**
- * Class Jsonable
+ * @class Jsonable
  * @package Platine\Stdlib\Contract
  */
 interface Jsonable

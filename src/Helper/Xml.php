@@ -47,7 +47,7 @@ declare(strict_types=1);
 namespace Platine\Stdlib\Helper;
 
 /**
- * Class Xml
+ * @class Xml
  * @package Platine\Stdlib\Helper
  */
 class Xml
@@ -67,7 +67,7 @@ class Xml
      * @param array<int|string, mixed|iterable> $data
      * @return string
      */
-    public static function encode($data): string
+    public static function encode(iterable $data): string
     {
         $xml = '<xml>';
         $xml .= self::arrayToXml($data);
@@ -102,10 +102,14 @@ class Xml
      * @param array<int|string, mixed|iterable> $data
      * @return string
      */
-    public static function arrayToXml($data): string
+    public static function arrayToXml(iterable $data): string
     {
         $xml = '';
-        if (!empty($data)) {
+        if (is_array($data) === false) {
+            $data = iterator_to_array($data);
+        }
+
+        if (count($data) > 0) {
             foreach ($data as $key => $value) {
                 if (is_int($key) === false) {
                     $xml .= '<' . $key . '>';

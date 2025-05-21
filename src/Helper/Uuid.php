@@ -59,7 +59,7 @@ namespace Platine\Stdlib\Helper;
 use InvalidArgumentException;
 
 /**
- * Class Uuid
+ * @class Uuid
  * @package Platine\Stdlib\Helper
  */
 class Uuid

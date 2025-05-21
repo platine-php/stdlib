@@ -53,7 +53,7 @@ use Platine\Stdlib\Helper\Arr;
 use Platine\Stdlib\Helper\Str;
 
 /**
- * Class AbstractConfiguration
+ * @class AbstractConfiguration
  * @package Platine\Stdlib\Config
  */
 abstract class AbstractConfiguration implements ConfigurationInterface
@@ -76,9 +76,9 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     /**
      * {@inheritedoc}
      */
-    public function get(string $name)
+    public function get(string $name): mixed
     {
-        if (!$this->has($name)) {
+        if ($this->has($name) === false) {
             throw new InvalidArgumentException(sprintf(
                 'Configuration [%s] does not exist',
                 $name
@@ -91,7 +91,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     /**
      * {@inheritedoc}
      */
-    public function set(string $name, $value): void
+    public function set(string $name, mixed $value): void
     {
         $rules = $this->getValidationRules();
         if (array_key_exists($name, $rules)) {
@@ -163,10 +163,10 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      * @param string $key the configuration
      *  key to be checked can be dot notation
      * @param string $type
-     * @param null|mixed $value
+     * @param mixed $value
      * @return void
      */
-    private function checkType(string $key, string $type, $value = null): void
+    private function checkType(string $key, string $type, mixed $value = null): void
     {
         if (!Arr::has($this->config, $key) && $value === null) {
             return;

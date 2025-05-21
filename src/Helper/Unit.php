@@ -47,7 +47,7 @@ declare(strict_types=1);
 namespace Platine\Stdlib\Helper;
 
 /**
- * Class Unit
+ * @class Unit
  * @package Platine\Stdlib\Helper
  */
 class Unit
@@ -59,6 +59,7 @@ class Unit
      */
     public static function sizeInBytes(string $size): int
     {
+        $value = 1;
         $unit = 'B';
         $units = ['B' => 0, 'K' => 1, 'M' => 2, 'G' => 3, 'T' => 4];
         $matches = [];
@@ -66,7 +67,11 @@ class Unit
         if (array_key_exists('unit', $matches)) {
             $unit = strtoupper($matches['unit']);
         }
-        return (int)(floatval($matches['size']) * pow(1024, $units[$unit]));
+
+        if (array_key_exists('size', $matches)) {
+            $value = floatval(strtoupper($matches['size']));
+        }
+        return (int)($value * pow(1024, $units[$unit]));
     }
 
     /**
