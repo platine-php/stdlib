@@ -171,7 +171,7 @@ class Str
     /**
      * Convert an string to array
      * @param string $value
-     * @param string $delimiter
+     * @param non-empty-string $delimiter
      * @param int $limit
      * @return array<string>
      */

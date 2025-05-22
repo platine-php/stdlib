@@ -61,14 +61,14 @@ class Json
      * @param int $depth
      * @param int $options
      *
-     * @return array<mixed>|object|bool|null
+     * @return mixed
      */
     public static function decode(
         string $json,
         bool $assoc = false,
         int $depth = 512,
         int $options = 0
-    ): array|object|bool|null {
+    ): mixed {
         if ($depth < 1 || $depth > PHP_INT_MAX) {
             $depth = 512;
         }
