@@ -313,6 +313,11 @@ class ArrTest extends PlatineTestCase
           ],
           [
             'merge',
+            [[1], [2 => 0, 2]], // force second array key to start at 2
+            [0 => 1, 2 => 0, 3 => 2]
+          ],
+          [
+            'merge',
             [[1, 4, 'c' => [3]], ['c' => ['a' => 45], 2]],
             [1, 4, 'c' => [3, 'a' => 45], 2]
           ],

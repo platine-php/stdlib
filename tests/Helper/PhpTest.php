@@ -144,6 +144,18 @@ class PhpTest extends PlatineTestCase
                   'error' => 'Foo Exception',
               ]
           ],
+          [
+              'getShortClassName',
+              [__CLASS__],
+              [],
+              'PhpTest'
+          ],
+          [
+              'getShortClassName',
+              [new \Platine\Stdlib\Helper\Uuid()],
+              [],
+              'Uuid'
+          ],
         ];
     }
 }

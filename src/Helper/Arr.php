@@ -1057,7 +1057,7 @@ class Arr
 
     /**
      * Pluck an array of values from an arrays.
-     * @param array<int, array<mixed>> $array
+     * @param array<int, mixed> $array
      * @param string|int $value
      * @param string|int|null $key
      * @return array<mixed>

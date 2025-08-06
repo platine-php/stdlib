@@ -46,6 +46,7 @@ declare(strict_types=1);
 
 namespace Platine\Stdlib\Helper;
 
+use ReflectionClass;
 use Throwable;
 
 /**
@@ -157,5 +158,16 @@ class Php
             'file' => sprintf('at %s line %d', $err->getFile(), $err->getLine()),
             'trace' => $err->getTraceAsString(),
         ];
+    }
+
+    /**
+     * Return the class short name
+     * @param class-string|object $fullClassName
+     * @return string
+     */
+    public static function getShortClassName(string|object $fullClassName): string
+    {
+        $reflect = new ReflectionClass($fullClassName);
+        return $reflect->getShortName();
     }
 }
