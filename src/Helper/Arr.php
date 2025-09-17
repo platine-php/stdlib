@@ -970,14 +970,14 @@ class Arr
     /**
      * Return the first element in an array passing a given truth test.
      * @param array<mixed> $array
-     * @param callable $callable
+     * @param callable|null $callable
      * @param mixed $default
      *
      * @return mixed
      */
     public static function first(
         array $array,
-        callable $callable = null,
+        ?callable $callable = null,
         mixed $default = null
     ): mixed {
         if ($callable === null) {
@@ -1002,14 +1002,14 @@ class Arr
     /**
      * Return the last element in an array passing a given truth test.
      * @param array<mixed> $array
-     * @param callable $callable
+     * @param callable|null $callable
      * @param mixed $default
      *
      * @return mixed
      */
     public static function last(
         array $array,
-        callable $callable = null,
+        ?callable $callable = null,
         mixed $default = null
     ): mixed {
         if ($callable === null) {
