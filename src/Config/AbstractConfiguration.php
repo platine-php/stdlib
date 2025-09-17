@@ -108,6 +108,8 @@ abstract class AbstractConfiguration implements ConfigurationInterface
             $setterMethod = 'set' . ucfirst($key);
             if (method_exists($this, $setterMethod)) {
                 $this->{$setterMethod}($value);
+            } elseif (property_exists($this, $key)) {
+                $this->{$key} = $value;
             }
         }
     }
