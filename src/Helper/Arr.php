@@ -659,6 +659,24 @@ class Arr
     }
 
     /**
+     * Filter array values
+     * @param array<mixed> $array
+     * @return array<mixed>
+     */
+    public static function filterValue(array $array): array
+    {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                // Recursively filter the sub-array
+                $value = self::filterValue($value);
+            }
+        }
+
+        // Filter the current level, removing empty values and arrays
+        return array_filter($array);
+    }
+
+    /**
      * Filters array according to rules specified.
      * @param array<mixed> $array
      * @param array<string> $filters Rules that define array keys which should

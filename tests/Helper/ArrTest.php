@@ -220,6 +220,21 @@ class ArrTest extends PlatineTestCase
     {
         return [
           [
+              'filterValue',
+              [[2, 4, 5]],
+              [2, 4, 5]
+          ],
+          [
+              'filterValue',
+              [[2, 4, 5, null, 'a' => 2, '']],
+              [2, 4, 5, 'a' => 2]
+          ],
+          [
+              'filterValue',
+              [['a' => [2, null], [1, 2]]],
+              ['a' => [2], [1, 2]]
+          ],
+          [
               'first',
               [[2, 4, 5]],
               2
