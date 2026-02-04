@@ -82,7 +82,7 @@ class ComposerTest extends PlatineTestCase
         $mock_json_decode_to_array = true;
 
         $packages = Composer::parseLockFile('project/foo/bar/test');
-        $this->assertCount(1, $packages);
+        $this->assertCount(2, $packages);
         $this->assertIsArray($packages);
         $this->assertArrayHasKey('name', $packages[0]);
         $this->assertArrayHasKey('type', $packages[0]);

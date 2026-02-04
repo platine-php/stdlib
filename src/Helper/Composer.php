@@ -110,7 +110,6 @@ class Composer
             ));
         }
 
-
         $json = file_get_contents($filename);
 
         if ($json === false) {
@@ -123,16 +122,39 @@ class Composer
             return [];
         }
 
-        $packages = [];
-        $allPackages = Arr::merge($data['packages'], $data['packages-dev'] ?? []);
-        foreach ($allPackages as $pkg) {
+        $results = [];
+        $packages = static::processPackages($data['packages'], $filter);
+        $devPackages = static::processPackages($data['packages-dev'] ?? [], $filter);
+        foreach ($packages as $pkg) {
+            $pkg['dev'] = false;
+            $results[] = $pkg;
+        }
+
+        foreach ($devPackages as $pkg) {
+            $pkg['dev'] = true;
+            $results[] = $pkg;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Process the packages
+     * @param array<int, array<string, mixed>> $packages
+     * @param callable|null $filter
+     * @return array<int, array<string, mixed>>
+     */
+    protected static function processPackages(array $packages, ?callable $filter = null): array
+    {
+        $results = [];
+        foreach ($packages as $pkg) {
             if ($filter && $filter($pkg['name'], $pkg['type']) === false) {
                 continue;
             }
 
-            $packages[] = $pkg;
+            $results[] = $pkg;
         }
 
-        return $packages;
+        return $results;
     }
 }
