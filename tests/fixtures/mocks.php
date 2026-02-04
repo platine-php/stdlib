@@ -222,7 +222,7 @@ function json_decode(string $name, $assoc, int $depth = 512, int $flags = 0)
                 'name' => 'foo',
                 'type' => 'library',
             ],
-        ]];
+        ], 'packages-dev' => []];
     }
 
     return \json_decode($name, $assoc, $depth, $flags);

@@ -124,7 +124,8 @@ class Composer
         }
 
         $packages = [];
-        foreach ($data['packages'] as $pkg) {
+        $allPackages = Arr::merge($data['packages'], $data['packages-dev'] ?? []);
+        foreach ($allPackages as $pkg) {
             if ($filter && $filter($pkg['name'], $pkg['type']) === false) {
                 continue;
             }
