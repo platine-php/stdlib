@@ -982,14 +982,14 @@ class Arr
     /**
      * Return the last element in an array passing a given truth test.
      * @param array<mixed> $array
-     * @param callable $callable
+     * @param callable|null $callable
      * @param mixed $default
      *
      * @return mixed
      */
     public static function last(
         array $array,
-        callable $callable = null,
+        ?callable $callable = null,
         $default = null
     ) {
         if ($callable === null) {
