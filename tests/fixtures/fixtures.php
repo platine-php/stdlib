@@ -53,8 +53,7 @@ class phpCallClassCommon
 {
     public function foo($a)
     {
-        #[\ReturnTypeWillChange]
-        function jsonSerialize(): mixed
+        function jsonSerialize()
         {
         }
 
