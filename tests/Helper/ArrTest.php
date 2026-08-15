@@ -834,21 +834,25 @@ class ArrTest extends PlatineTestCase
         $aa =  new class implements ArrayAccess{
             private $arr = [1, 4, 5];
 
+            #[\ReturnTypeWillChange]
             public function offsetExists($offset): bool
             {
                 return isset($this->arr[$offset]);
             }
 
+            #[\ReturnTypeWillChange]
             public function offsetGet($offset)
             {
                 return $this->arr[$offset];
             }
 
+            #[\ReturnTypeWillChange]
             public function offsetSet($offset, $value): void
             {
                 $this->arr[$offset] = $value;
             }
 
+            #[\ReturnTypeWillChange]
             public function offsetUnset($offset): void
             {
                 unset($this->arr[$offset]);

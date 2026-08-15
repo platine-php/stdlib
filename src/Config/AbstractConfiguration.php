@@ -78,7 +78,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function get(string $name)
     {
-        if (!$this->has($name)) {
+        if ($this->has($name) === false) {
             throw new InvalidArgumentException(sprintf(
                 'Configuration [%s] does not exist',
                 $name
@@ -108,7 +108,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
             $setterMethod = 'set' . ucfirst($key);
             if (method_exists($this, $setterMethod)) {
                 $this->{$setterMethod}($value);
-            } else {
+            } elseif (property_exists($this, $key)) {
                 $this->{$key} = $value;
             }
         }
@@ -128,9 +128,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     public function load(array $config): void
     {
         $this->config = $config;
-        $rules = $this->getValidationRules();
-        $setters = $this->getSetterMaps();
-
+   
         foreach ($config as $name => $value) {
             $this->set($name, $value);
         }

@@ -42,6 +42,7 @@ class StringifytoString
 
 class StringifyJson implements JsonSerializable
 {
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return [1, 2, 3];
@@ -52,6 +53,7 @@ class phpCallClassCommon
 {
     public function foo($a)
     {
+        #[\ReturnTypeWillChange]
         function jsonSerialize(): mixed
         {
         }
