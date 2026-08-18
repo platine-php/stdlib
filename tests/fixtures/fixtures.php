@@ -42,7 +42,7 @@ class StringifytoString
 
 class StringifyJson implements JsonSerializable
 {
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return [1, 2, 3];
     }
