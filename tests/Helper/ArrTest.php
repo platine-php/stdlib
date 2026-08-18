@@ -391,7 +391,7 @@ class ArrTest extends PlatineTestCase
           [
             'index',
             [[1, 4, 5], [3, 2], 0],
-            ['' => null]
+            []
           ],
           [
             'index',

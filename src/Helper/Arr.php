@@ -348,7 +348,9 @@ class Arr
                 if (count($lastArray) > 0 && !array_key_exists($value, $lastArray)) {
                     $lastArray[$value] = [];
                 }
-                $lastArray = &$lastArray[$value];
+                if ($value !== null) {
+                    $lastArray = &$lastArray[$value];
+                }
             }
 
             if ($key === null) {
